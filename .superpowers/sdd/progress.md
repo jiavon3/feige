@@ -1,0 +1,5 @@
+Task 1: complete (no git, review clean — minor: stale target/ until package)
+Task 2: complete (review clean)
+Task 3: complete (review clean)
+Task 4: complete (acceptance PASS)
+Task final: Ready (review clean, minors only)

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 · 飞鸽</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#14201c',
+            paper: '#f3f6f4',
+            celadon: '#2f7a6d',
+            line: '#d5e0db',
+            muted: '#5c6b66',
+            card: '#ffffff'
+          },
+          fontFamily: {
+            display: ['"Songti SC"', 'Palatino', 'serif'],
+            sans: ['"PingFang SC"', '"Noto Sans SC"', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans bg-paper text-ink min-h-full">
+  <div class="min-h-full flex items-center justify-center px-6 py-16"
+       style="background:radial-gradient(circle at top, rgba(47,122,109,0.14), transparent 32%), #f3f6f4;">
+    <main class="w-full max-w-md rounded-xl border border-line bg-card p-8 shadow-[0_18px_50px_rgba(20,32,28,0.08)] flex flex-col gap-5">
+      <div class="flex items-center gap-3">
+        <svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="64" height="64" rx="16" fill="#2f7a6d"/>
+          <path fill="#f3f6f4" d="M10 38c9-3 15-12 17-20 2 8 7 14 15 17-8 2-14 6-17 13-1-5-6-8-15-10z"/>
+          <path fill="#c8ebe3" d="M42 33c7 1 12 5 14 11-6-1-10 0-14-2-3-2-3-5 0-9z"/>
+          <circle cx="26" cy="24" r="1.8" fill="#14201c"/>
+          <path d="M16 46c8 5 18 7 28 4" fill="none" stroke="#f3f6f4" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M46 18h8v6l-4 3-4-3z" fill="#d97706"/>
+        </svg>
+        <p class="font-display text-2xl tracking-widest text-celadon">飞鸽</p>
+      </div>
+      <h1 class="font-display text-3xl">回到局域网</h1>
+      <p class="text-muted text-sm">用已经注册的账号进入大厅，或点开某个人私聊。</p>
+      <form class="flex flex-col gap-4" id="login-form">
+        <label class="flex flex-col gap-2 text-sm">用户名
+          <input class="rounded-lg border border-line px-3 py-2.5 bg-white" type="text" name="username" autocomplete="username" required>
+        </label>
+        <label class="flex flex-col gap-2 text-sm">密码
+          <input class="rounded-lg border border-line px-3 py-2.5 bg-white" type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <button type="button" id="login-btn" class="rounded-lg bg-celadon text-paper px-4 py-2.5">进入</button>
+      </form>
+      <p class="text-sm text-muted">还没有账号？<a id="to-register" class="text-celadon" href="javascript:void(0);" data-uuid="register">注册</a></p>
+    </main>
+  </div>
+  <script id="interaction-data" type="application/json">
+  `[{"original":"#login-btn","trigger":"click","actions":[{"operation":"openPage","params":"chat"}]}]`
+  </script>
+</body>
+</html>

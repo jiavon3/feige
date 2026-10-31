@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>飞鸽</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <script>
+        (function () {
+            var match = document.cookie.match(/(?:^|; )feige-theme=([^;]*)/);
+            var theme = match ? decodeURIComponent(match[1]) : "classic";
+            if (theme !== "classic" && theme !== "signal") theme = "classic";
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="app">
+    <aside>
+        <div class="brand">
+            <a class="brand-lockup" href="/chat">
+                <img class="brand-mark" src="/favicon.png" alt="">
+                <span class="mark">飞鸽</span>
+            </a>
+            <form method="post" action="/logout">
+                <input type="hidden" name="_csrf">
+                <button class="text" type="submit">退出</button>
+            </form>
+        </div>
+        <p id="me" class="me"></p>
+        <a id="adminLink" class="admin-link" href="/admin" hidden>管理账号和记录</a>
+        <button id="hall" class="nav active" type="button">
+            <span>大厅</span>
+            <span id="hallBadge" class="badge" hidden></span>
+        </button>
+        <p class="nav-label">其他人</p>
+        <div id="users" class="people"></div>
+    </aside>
+    <main>
+        <header class="thread-head">
+            <h1 id="title">大厅</h1>
+            <p id="status" class="status" hidden>连接已断开，正在重连</p>
+            <p id="flash" class="flash" hidden></p>
+        </header>
+        <div id="log" class="log"></div>
+        <div id="quoteBar" class="quote-bar" hidden>
+            <div>
+                <strong id="quoteWho"></strong>
+                <span id="quoteText"></span>
+            </div>
+            <button id="quoteCancel" class="text ink" type="button">取消</button>
+        </div>
+        <form id="composer" class="composer">
+            <div class="composer-shell">
+                <div class="composer-toolbar">
+                    <div class="tool-group">
+                        <div class="emoji-wrap">
+                            <button id="emojiToggle" class="tool-btn" type="button" title="表情" aria-label="表情" aria-expanded="false">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="10" r="1.2" fill="currentColor"/><circle cx="15" cy="10" r="1.2" fill="currentColor"/><path d="M8.5 14.2c1.2 1.4 2.4 2 3.5 2s2.3-.6 3.5-2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                            </button>
+                            <div id="emojiPanel" class="emoji-panel" hidden role="dialog" aria-label="表情"></div>
+                        </div>
+                        <label class="tool-btn" title="图片" aria-label="图片">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="10.5" r="1.5" fill="currentColor"/><path d="M7 16.5l3.2-3.2 2.3 2.3 3-3.6 3.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <input id="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" multiple>
+                        </label>
+                        <label class="tool-btn" title="文件" aria-label="文件">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4.5H8A2.5 2.5 0 0 0 5.5 7v10A2.5 2.5 0 0 0 8 19.5h8A2.5 2.5 0 0 0 18.5 17V9.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14.5 4.5V9.5H18.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                            <input id="file" type="file">
+                        </label>
+                        <div class="font-wrap">
+                            <button id="fontToggle" class="tool-btn" type="button" title="字体" aria-label="字体" aria-expanded="false">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18.5L10.2 5.5h3.6L19 18.5h-3.1l-1-2.8H9.1l-1 2.8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.8 12.8h4.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                            </button>
+                            <div id="fontPanel" class="font-panel" hidden role="dialog" aria-label="字体设置">
+                                <div class="font-row">
+                                    <span class="font-label">字号</span>
+                                    <div class="font-chips" id="fontSizeChips"></div>
+                                </div>
+                                <div class="font-row">
+                                    <span class="font-label">样式</span>
+                                    <div class="font-chips" id="fontStyleChips"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="composer-hint">粘贴图片 · Enter 发送</span>
+                </div>
+                <div id="attachPreview" class="attach-preview" hidden>
+                    <div id="attachThumbs" class="attach-thumbs"></div>
+                    <div class="attach-meta">
+                        <span id="fileName" class="file-name"></span>
+                        <button id="attachClear" class="text ink" type="button">清除</button>
+                    </div>
+                </div>
+                <div class="composer-main">
+                    <textarea id="text" maxlength="2000" rows="3" placeholder="写一条消息…"></textarea>
+                    <button class="send-btn" type="submit">发送</button>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+<script src="/js/csrf.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/chat.js"></script>
+</body>
+</html>

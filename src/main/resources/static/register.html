@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>注册 · 飞鸽</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <script>
+        (function () {
+            var match = document.cookie.match(/(?:^|; )feige-theme=([^;]*)/);
+            var theme = match ? decodeURIComponent(match[1]) : "classic";
+            if (theme !== "classic" && theme !== "signal") theme = "classic";
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="gate">
+<section class="gate-brand">
+    <img class="gate-hero-mark" src="/hero-mark.png" alt="">
+    <p class="gate-brand-name">飞鸽</p>
+    <p class="gate-tagline"><span>局域网即时通信 · 简单安全高效</span></p>
+    <p class="gate-sub">专为局域网打造的畅聊工具</p>
+</section>
+<main class="gate-panel">
+    <div class="gate-panel-inner">
+        <h1>注册</h1>
+        <p id="error" class="error" hidden></p>
+        <form id="form">
+            <label class="gate-field">用户名
+                <span class="gate-input">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.2 18.5c1.2-2.6 3.2-3.8 5.8-3.8s4.6 1.2 5.8 3.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    <input name="username" autocomplete="username" placeholder="请输入用户名" required maxlength="20">
+                </span>
+            </label>
+            <label class="gate-field">密码
+                <span class="gate-input">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 11V8.5a3 3 0 0 1 6 0V11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    <input id="password" name="password" type="password" autocomplete="new-password" placeholder="请输入密码" required minlength="6" maxlength="64">
+                    <button class="gate-eye" type="button" aria-label="显示密码">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                    </button>
+                </span>
+            </label>
+            <button class="gate-submit" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l15-7-6 16-2.2-6.2z" fill="currentColor"/></svg>
+                注册
+            </button>
+        </form>
+        <p class="switch">已有账号？<a href="/login">立即登录 &gt;</a></p>
+    </div>
+</main>
+<script src="/js/csrf.js"></script>
+<script src="/js/theme.js"></script>
+<script>
+    var form = document.getElementById("form");
+    var error = document.getElementById("error");
+    document.querySelector(".gate-eye").addEventListener("click", function () {
+        var input = document.getElementById("password");
+        var show = input.type === "password";
+        input.type = show ? "text" : "password";
+        this.setAttribute("aria-label", show ? "隐藏密码" : "显示密码");
+    });
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        error.hidden = true;
+        var body = {
+            username: form.username.value,
+            password: form.password.value
+        };
+        fetch("/api/register", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                "X-XSRF-TOKEN": readCsrf()
+            },
+            body: JSON.stringify(body)
+        }).then(function (response) {
+            if (response.status === 201) {
+                location.href = "/login";
+                return;
+            }
+            return response.json().then(function (payload) {
+                error.textContent = payload.message || "注册失败";
+                error.hidden = false;
+            });
+        }).catch(function () {
+            error.textContent = "注册失败";
+            error.hidden = false;
+        });
+    });
+</script>
+</body>
+</html>

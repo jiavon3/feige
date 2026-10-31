@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录 · 飞鸽</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <script>
+        (function () {
+            var match = document.cookie.match(/(?:^|; )feige-theme=([^;]*)/);
+            var theme = match ? decodeURIComponent(match[1]) : "classic";
+            if (theme !== "classic" && theme !== "signal") theme = "classic";
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="gate gate-login">
+<section class="gate-brand">
+    <img class="gate-hero-mark" src="/hero-mark.png" alt="">
+    <p class="gate-brand-name">飞鸽</p>
+    <p class="gate-tagline"><span>局域网即时通信 · 简单安全高效</span></p>
+    <p class="gate-sub">专为局域网打造的畅聊工具</p>
+</section>
+<main class="gate-panel">
+    <div class="gate-stage">
+        <div class="dove-wrap">
+            <div class="tip-bubble" id="tipBubble">咕，欢迎回来</div>
+            <div class="dove-scene">
+                <div class="dove-shadow"></div>
+                <div class="dove-bob">
+                    <div class="dove" id="dove">
+                        <svg viewBox="0 0 280 220" aria-hidden="true">
+                            <path d="M190 142 C232 136 260 108 248 84" fill="none" stroke="#2a9a88" stroke-width="16" stroke-linecap="round"/>
+                            <path d="M198 156 C236 158 262 136 252 112" fill="none" stroke="#3eae9a" stroke-width="10" stroke-linecap="round"/>
+                            <ellipse cx="140" cy="152" rx="74" ry="52" fill="#3eae9a"/>
+                            <ellipse cx="140" cy="160" rx="50" ry="34" fill="#e8f7f3"/>
+                            <g class="wing left">
+                                <ellipse cx="76" cy="150" rx="32" ry="16" fill="#2c9786" transform="rotate(-32 76 150)"/>
+                            </g>
+                            <g class="wing right">
+                                <ellipse cx="204" cy="148" rx="32" ry="16" fill="#2c9786" transform="rotate(28 204 148)"/>
+                            </g>
+                            <circle cx="140" cy="74" r="46" fill="#46b6a4"/>
+                            <ellipse cx="140" cy="86" rx="30" ry="22" fill="#e8f7f3"/>
+                            <path d="M127 86 L140 104 L153 86 Z" fill="#e0b15a"/>
+                            <ellipse cx="112" cy="200" rx="16" ry="7" fill="#e0b15a"/>
+                            <ellipse cx="168" cy="200" rx="16" ry="7" fill="#e0b15a"/>
+                        </svg>
+                        <div class="dove-eyes">
+                            <div class="dove-eye left"><div class="pupil" id="pupilLeft"></div></div>
+                            <div class="dove-eye right"><div class="pupil" id="pupilRight"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gate-panel-inner" id="loginCard">
+        <h1>登录</h1>
+        <p class="gate-desc">欢迎回来，请使用账号登录</p>
+        <p id="error" class="error" hidden>用户名或密码错误</p>
+        <form method="post" action="/login">
+            <label class="gate-field">用户名
+                <span class="gate-input">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.2 18.5c1.2-2.6 3.2-3.8 5.8-3.8s4.6 1.2 5.8 3.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    <input id="username" name="username" autocomplete="username" placeholder="请输入用户名" required>
+                </span>
+            </label>
+            <label class="gate-field">密码
+                <span class="gate-input">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 11V8.5a3 3 0 0 1 6 0V11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    <input id="password" name="password" type="password" autocomplete="current-password" placeholder="请输入密码" required>
+                    <button class="gate-eye" type="button" aria-label="显示密码">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                    </button>
+                </span>
+            </label>
+            <input type="hidden" name="_csrf">
+            <button class="gate-submit" id="loginBtn" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l15-7-6 16-2.2-6.2z" fill="currentColor"/></svg>
+                进入
+            </button>
+        </form>
+        <p class="switch">还没有账号？<a href="/register">立即注册 &gt;</a></p>
+        </div>
+    </div>
+</main>
+<script src="/js/csrf.js"></script>
+<script src="/js/theme.js"></script>
+<script>
+    var dove = document.getElementById("dove");
+    var loginCard = document.getElementById("loginCard");
+    var usernameInput = document.getElementById("username");
+    var passwordInput = document.getElementById("password");
+    var loginBtn = document.getElementById("loginBtn");
+    var pupilLeft = document.getElementById("pupilLeft");
+    var pupilRight = document.getElementById("pupilRight");
+    var tipBubble = document.getElementById("tipBubble");
+
+    function moveEyes(x, y) {
+        var value = "translate(calc(-50% + " + x + "px), calc(-50% + " + y + "px))";
+        pupilLeft.style.transform = value;
+        pupilRight.style.transform = value;
+    }
+
+    var tipTimer = 0;
+    function setTip(text) {
+        window.clearTimeout(tipTimer);
+        if (tipBubble.textContent === text) {
+            tipBubble.style.opacity = "1";
+            return;
+        }
+        tipBubble.style.opacity = "0";
+        tipTimer = window.setTimeout(function () {
+            tipBubble.textContent = text;
+            tipBubble.style.opacity = "1";
+        }, 120);
+    }
+
+    function blink() {
+        var eyes = document.querySelectorAll(".dove-eye");
+        eyes.forEach(function (eye) {
+            eye.classList.add("blinking");
+            window.setTimeout(function () { eye.classList.remove("blinking"); }, 250);
+        });
+    }
+
+    function restDove() {
+        dove.style.transform = "";
+        dove.classList.remove("wing-action");
+        moveEyes(0, 0);
+        setTip("咕，欢迎回来");
+    }
+
+    loginCard.addEventListener("mouseenter", function () {
+        if (document.activeElement === usernameInput || document.activeElement === passwordInput) return;
+        dove.style.transform = "translateY(6px)";
+        moveEyes(0, 6);
+    });
+    loginCard.addEventListener("mouseleave", function () {
+        if (document.activeElement === usernameInput || document.activeElement === passwordInput) return;
+        restDove();
+    });
+
+    usernameInput.addEventListener("focus", function () {
+        moveEyes(-6, 4);
+        dove.style.transform = "rotate(-3deg)";
+        setTip("记下你的名字");
+        blink();
+    });
+    usernameInput.addEventListener("blur", function () {
+        window.setTimeout(function () {
+            var active = document.activeElement;
+            if (active === usernameInput || active === passwordInput || active === loginBtn) return;
+            restDove();
+        }, 0);
+    });
+
+    passwordInput.addEventListener("focus", function () {
+        moveEyes(2, -5);
+        dove.style.transform = "rotate(4deg)";
+        setTip("密码我先不看");
+        blink();
+    });
+    passwordInput.addEventListener("blur", function () {
+        window.setTimeout(function () {
+            var active = document.activeElement;
+            if (active === usernameInput || active === passwordInput || active === loginBtn) return;
+            restDove();
+        }, 0);
+    });
+
+    loginBtn.addEventListener("mouseenter", function () {
+        moveEyes(0, 8);
+        dove.classList.add("wing-action");
+        dove.style.transform = "translateY(-4px)";
+        setTip("一起出发");
+    });
+    loginBtn.addEventListener("mouseleave", function () {
+        if (document.activeElement === usernameInput || document.activeElement === passwordInput) return;
+        restDove();
+    });
+    loginBtn.addEventListener("click", function () {
+        dove.classList.add("wing-action");
+        dove.style.transform = "translateY(-8px) scale(1.04)";
+        blink();
+    });
+
+    window.setInterval(function () {
+        if (document.activeElement !== usernameInput && document.activeElement !== passwordInput) blink();
+    }, 4200);
+
+    if (location.search.indexOf("error") >= 0) {
+        document.getElementById("error").hidden = false;
+        setTip("再试一次吧");
+    }
+    document.querySelector(".gate-eye").addEventListener("click", function () {
+        var input = document.getElementById("password");
+        var show = input.type === "password";
+        input.type = show ? "text" : "password";
+        this.setAttribute("aria-label", show ? "隐藏密码" : "显示密码");
+        blink();
+    });
+</script>
+</body>
+</html>
