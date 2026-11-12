@@ -27,7 +27,6 @@
     var fileName = document.getElementById("fileName");
     var attachPreview = document.getElementById("attachPreview");
     var attachThumbs = document.getElementById("attachThumbs");
-    var attachClear = document.getElementById("attachClear");
     var emojiToggle = document.getElementById("emojiToggle");
     var emojiPanel = document.getElementById("emojiPanel");
     var fontToggle = document.getElementById("fontToggle");
@@ -648,7 +647,6 @@
             imageInput.value = "";
         }
     });
-    attachClear.addEventListener("click", clearAttachment);
 
     function readFontPrefs() {
         try {
