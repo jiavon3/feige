@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>飞鸽</title>
-    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="icon" href="/favicon.png?v=2" type="image/png">
     <script>
         (function () {
             var match = document.cookie.match(/(?:^|; )feige-theme=([^;]*)/);
@@ -20,7 +20,7 @@
     <aside>
         <div class="brand">
             <a class="brand-lockup" href="/chat">
-                <img class="brand-mark" src="/favicon.png" alt="">
+                <img class="brand-mark" src="/favicon.png?v=2" alt="">
                 <span class="mark">飞鸽</span>
             </a>
             <form method="post" action="/logout">
@@ -67,7 +67,7 @@
                         </label>
                         <label class="tool-btn" title="文件" aria-label="文件">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4.5H8A2.5 2.5 0 0 0 5.5 7v10A2.5 2.5 0 0 0 8 19.5h8A2.5 2.5 0 0 0 18.5 17V9.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14.5 4.5V9.5H18.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
-                            <input id="file" type="file">
+                            <input id="file" type="file" multiple>
                         </label>
                         <div class="font-wrap">
                             <button id="fontToggle" class="tool-btn" type="button" title="字体" aria-label="字体" aria-expanded="false">
@@ -91,7 +91,6 @@
                     <div id="attachThumbs" class="attach-thumbs"></div>
                     <div class="attach-meta">
                         <span id="fileName" class="file-name"></span>
-                        <button id="attachClear" class="text ink" type="button">清除</button>
                     </div>
                 </div>
                 <div class="composer-main">

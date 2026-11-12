@@ -82,7 +82,7 @@ a { color: var(--seal); }
     border-radius: 36px;
     object-fit: cover;
     background: transparent;
-    box-shadow: 0 16px 28px rgba(18, 90, 78, 0.2);
+    box-shadow: none;
 }
 .gate-brand-name {
     position: relative;
@@ -130,24 +130,6 @@ a { color: var(--seal); }
 }
 .gate-panel-inner {
     width: min(400px, 100%);
-}
-.gate-panel h1 {
-    margin: 0 0 32px;
-    text-align: center;
-    font-family: "PingFang SC", "Noto Sans SC", sans-serif;
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    color: #1a1a1a;
-}
-.gate-panel h1::after {
-    content: "";
-    display: block;
-    width: 48px;
-    height: 3px;
-    margin: 14px auto 0;
-    border-radius: 2px;
-    background: #1f8f86;
 }
 .gate-field {
     display: block;
@@ -231,7 +213,6 @@ a { color: var(--seal); }
     .gate-brand { padding: 36px 20px 28px; }
     .gate-hero-mark { width: 96px; height: 96px; border-radius: 24px; }
     .gate-brand-name { font-size: 48px; letter-spacing: 0.12em; }
-    .gate-panel h1 { font-size: 32px; }
 }
 
 .card {
@@ -298,10 +279,11 @@ button.text, .file {
 
 aside {
     background:
-        linear-gradient(180deg, rgba(47, 122, 109, 0.06), transparent 120px),
-        #f7fbf9;
-    color: var(--ink);
-    border-right: 1px solid var(--line);
+        radial-gradient(90% 42% at 0% 0%, rgba(255, 255, 255, 0.14), transparent 58%),
+        linear-gradient(180deg, #1e6b5e 0%, #14342e 100%);
+    color: #f3faf7;
+    border-right: 0;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
     padding: 18px 14px 16px;
     display: flex;
     flex-direction: column;
@@ -309,15 +291,15 @@ aside {
 }
 
 aside .mark {
-    color: var(--seal);
+    color: #f7fffc;
     font-size: 22px;
     letter-spacing: 0.14em;
 }
 
 aside button.text {
-    color: var(--muted);
-    background: #fff;
-    border: 1px solid var(--line);
+    color: #e7f6f1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 999px;
     padding: 4px 12px;
     font-size: 13px;
@@ -325,17 +307,18 @@ aside button.text {
 
 aside .me {
     margin: 16px 8px 6px;
-    color: var(--muted);
+    color: rgba(243, 250, 247, 0.86);
 }
 
 aside .admin-link {
     margin: 0 8px 12px;
+    color: #d8fff4;
     font-size: 13px;
 }
 
 aside .nav-label {
     margin: 14px 8px 8px;
-    color: var(--muted);
+    color: rgba(243, 250, 247, 0.78);
     font-size: 12px;
     letter-spacing: 0.12em;
 }
@@ -345,19 +328,27 @@ aside .person {
     border: 0;
     border-radius: 12px;
     margin: 0 0 4px;
-    color: var(--ink);
+    color: #f3faf7;
 }
 
 aside .nav:hover,
 aside .person:hover {
-    background: rgba(47, 122, 109, 0.08);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 aside .nav.active,
 aside .person.active {
-    background: rgba(47, 122, 109, 0.14);
-    color: #1d5c52;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
     font-weight: 600;
+}
+
+aside .dot {
+    background: rgba(255, 255, 255, 0.38);
+}
+
+aside .dot.on {
+    background: #b7f3cf;
 }
 
 .brand, .thread-head, .composer, .admin-bar, .quote-bar {
@@ -816,6 +807,45 @@ main {
     gap: 8px;
 }
 
+.attach-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    padding: 4px 8px 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.attach-file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+}
+
+.attach-file .remove {
+    width: 18px;
+    height: 18px;
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 18px;
+    cursor: pointer;
+}
+
+.attach-file .remove:hover {
+    background: rgba(47, 122, 109, 0.1);
+    color: var(--ink);
+}
+
 .attach-thumb {
     position: relative;
     width: 68px;
@@ -1042,7 +1072,6 @@ html[data-theme="signal"] .gate-panel {
     color: #fff;
 }
 html[data-theme="signal"] .gate-panel,
-html[data-theme="signal"] .gate-panel h1,
 html[data-theme="signal"] .gate-field,
 html[data-theme="signal"] .gate .switch {
     color: #1c1c1c;
@@ -1051,12 +1080,6 @@ html[data-theme="signal"] .gate .switch {
 html[data-theme="signal"] .gate-panel {
     background: #fbfbfb;
 }
-html[data-theme="signal"] .gate-panel h1 {
-    font-size: 40px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-}
-html[data-theme="signal"] .gate-panel h1::after { background: #1f8f86; }
 html[data-theme="signal"] .gate-field { color: #222; }
 html[data-theme="signal"] .gate-input {
     background: #fff;
@@ -1321,7 +1344,7 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     appearance: none;
 }
 
-.gate-login .gate-panel {
+.gate-dove .gate-panel {
     display: flex;
     overflow: auto;
     background:
@@ -1329,19 +1352,19 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
         radial-gradient(70% 45% at 0% 100%, rgba(23, 143, 134, 0.12), transparent 48%),
         linear-gradient(165deg, #f7fbf9 0%, #e5f4ef 100%);
 }
-.gate-login .gate-stage {
+.gate-dove .gate-stage {
     width: min(420px, 100%);
     margin: auto;
     padding: 28px 0;
 }
-.gate-login .dove-wrap {
+.gate-dove .dove-wrap {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 46px;
 }
-.gate-login .tip-bubble {
+.gate-dove .tip-bubble {
     position: absolute;
     top: 8px;
     left: 50%;
@@ -1357,7 +1380,7 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     transition: opacity 0.2s ease;
     z-index: 2;
 }
-.gate-login .tip-bubble::after {
+.gate-dove .tip-bubble::after {
     content: "";
     position: absolute;
     left: 50%;
@@ -1367,7 +1390,7 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     border-right: 7px solid transparent;
     border-top: 8px solid #fff;
 }
-.gate-login .dove-scene {
+.gate-dove .dove-scene {
     position: relative;
     width: 21em;
     height: 15.4em;
@@ -1376,7 +1399,7 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     align-items: flex-end;
     justify-content: center;
 }
-.gate-login .dove-shadow {
+.gate-dove .dove-shadow {
     position: absolute;
     bottom: 6px;
     left: 50%;
@@ -1385,25 +1408,25 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     transform: translateX(-50%);
     background: radial-gradient(ellipse, rgba(20, 90, 78, 0.18), transparent 70%);
 }
-.gate-login .dove-bob {
+.gate-dove .dove-bob {
     animation: dove-idle 3.6s ease-in-out infinite;
 }
-.gate-login .dove {
+.gate-dove .dove {
     position: relative;
     width: 19em;
     font-size: inherit;
     transform-origin: bottom center;
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.gate-login .dove svg { display: block; width: 100%; height: auto; }
-.gate-login .dove .wing {
+.gate-dove .dove svg { display: block; width: 100%; height: auto; }
+.gate-dove .dove .wing {
     transition: transform 0.4s ease;
     transform-box: fill-box;
     transform-origin: center;
 }
-.gate-login .dove.wing-action .wing.left { transform: translate(-8px, -8px) rotate(-12deg); }
-.gate-login .dove.wing-action .wing.right { transform: translate(8px, -8px) rotate(12deg); }
-.gate-login .dove-eyes {
+.gate-dove .dove.wing-action .wing.left { transform: translate(-8px, -8px) rotate(-12deg); }
+.gate-dove .dove.wing-action .wing.right { transform: translate(8px, -8px) rotate(12deg); }
+.gate-dove .dove-eyes {
     position: absolute;
     top: 3.15em;
     left: 50%;
@@ -1413,7 +1436,7 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     z-index: 3;
     pointer-events: none;
 }
-.gate-login .dove-eye {
+.gate-dove .dove-eye {
     position: absolute;
     width: 2.2em;
     height: 2.7em;
@@ -1422,9 +1445,9 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     background: #fff;
     box-shadow: inset 0 -1px 0 rgba(20, 80, 70, 0.08);
 }
-.gate-login .dove-eye.left { left: 0.55em; }
-.gate-login .dove-eye.right { right: 0.55em; }
-.gate-login .pupil {
+.gate-dove .dove-eye.left { left: 0.55em; }
+.gate-dove .dove-eye.right { right: 0.55em; }
+.gate-dove .pupil {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1435,7 +1458,7 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     transform: translate(-50%, -50%);
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.gate-login .dove-eye.blinking { animation: dove-blink 0.25s ease-in-out; }
+.gate-dove .dove-eye.blinking { animation: dove-blink 0.25s ease-in-out; }
 @keyframes dove-idle {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
@@ -1444,29 +1467,19 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     0%, 100% { transform: scaleY(1); }
     50% { transform: scaleY(0.08); }
 }
-.gate-login .gate-panel-inner {
+.gate-dove .gate-panel-inner {
     width: 100%;
-    padding: 36px 36px 28px;
+    padding: 30px 36px 26px;
     border-radius: 20px;
     background: #fff;
     box-shadow: 0 10px 40px rgba(18, 90, 78, 0.08);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
-.gate-login .gate-panel-inner:hover {
+.gate-dove .gate-panel-inner:hover {
     box-shadow: 0 16px 48px rgba(31, 143, 134, 0.16);
     transform: translateY(-4px);
 }
-.gate-login .gate-panel h1 {
-    margin-bottom: 0;
-    font-size: 32px;
-}
-.gate-login .gate-desc {
-    margin: 14px 0 26px;
-    text-align: center;
-    color: #7d8a86;
-    font-size: 14px;
-}
-.gate-login .gate-input {
+.gate-dove .gate-input {
     margin-top: 4px;
     padding: 0 2px;
     min-height: 46px;
@@ -1477,52 +1490,49 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
     box-shadow: none;
     transition: border-color 0.3s ease;
 }
-.gate-login .gate-input:focus-within {
+.gate-dove .gate-input:focus-within {
     border-bottom-color: #178f86;
     box-shadow: none;
 }
-.gate-login .gate-submit {
+.gate-dove .gate-submit {
     border-radius: 12px;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.gate-login .gate-submit:hover {
+.gate-dove .gate-submit:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 24px rgba(23, 143, 134, 0.32);
 }
-.gate-login .gate-submit:active {
+.gate-dove .gate-submit:active {
     transform: translateY(0);
     box-shadow: none;
 }
 @media (max-width: 899px) {
-    .gate-login .dove-scene { font-size: 8px; }
-    .gate-login .gate-panel-inner { padding: 28px 22px 22px; }
-    .gate-login .gate-panel h1 { font-size: 28px; }
+    .gate-dove .dove-scene { font-size: 8px; }
+    .gate-dove .gate-panel-inner { padding: 26px 22px 22px; }
 }
 @media (max-height: 760px) and (min-width: 900px) {
-    .gate-login .dove-scene { font-size: 8px; }
-    .gate-login .gate-panel-inner { padding: 28px 32px 22px; }
-    .gate-login .gate-panel h1 { font-size: 28px; }
-    .gate-login .gate-desc { margin-bottom: 18px; }
+    .gate-dove .dove-scene { font-size: 8px; }
+    .gate-dove .gate-panel-inner { padding: 24px 32px 20px; }
 }
 
-html[data-theme="signal"] .gate-login .gate-panel {
+html[data-theme="signal"] .gate-dove .gate-panel {
     background:
         radial-gradient(90% 55% at 100% 0%, rgba(61, 196, 180, 0.16), transparent 52%),
         linear-gradient(165deg, #f6f8f7 0%, #e7eeeb 100%);
 }
-html[data-theme="signal"] .gate-login .gate-panel-inner { background: #fff; }
-html[data-theme="signal"] .gate-login .gate-input {
+html[data-theme="signal"] .gate-dove .gate-panel-inner { background: #fff; }
+html[data-theme="signal"] .gate-dove .gate-input {
     background: transparent;
     border: 0;
     border-bottom: 1.5px solid #e3ebe8;
     box-shadow: none;
 }
-html[data-theme="signal"] .gate-login .gate-input:focus-within {
+html[data-theme="signal"] .gate-dove .gate-input:focus-within {
     border-bottom-color: #178f86;
     box-shadow: none;
 }
-html[data-theme="signal"] .gate-login .gate-submit,
-html[data-theme="signal"] .gate-login .gate-submit:hover {
+html[data-theme="signal"] .gate-dove .gate-submit,
+html[data-theme="signal"] .gate-dove .gate-submit:hover {
     background: linear-gradient(90deg, #1c8f86 0%, #3ec6b0 100%);
     color: #fff;
 }

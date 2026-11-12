@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Feige">
+  <rect width="160" height="160" rx="36" fill="#3eae9a"/>
+  <path d="M34 48c24-16 52-18 78-6" fill="none" stroke="#ffffff" stroke-opacity="0.4" stroke-width="3" stroke-linecap="round"/>
+  <path fill="#d8f4ee" d="M48 86c2-24 20-40 40-42-6 18-12 32-22 44-8 2-14 2-18-2z"/>
+  <path fill="#f7fffc" d="M40 98c-12 6-18 16-18 26 12-4 20-8 26-10 0-6-2-12-8-16z"/>
+  <ellipse cx="86" cy="96" rx="32" ry="18" fill="#ffffff" transform="rotate(-18 86 96)"/>
+  <path fill="#ffffff" d="M44 96c20-18 46-20 70-6-12 10-30 16-48 16-12 0-20-4-22-10z"/>
+  <path d="M58 94v14M70 92v16M82 92v15M94 94v12" fill="none" stroke="#8fd0c4" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="118" cy="74" r="14" fill="#ffffff"/>
+  <circle cx="123" cy="71" r="2.6" fill="#143832"/>
+  <path fill="#e0b15a" d="M130 76l16 3.2-15.2 5.4z"/>
+  <rect x="86" y="104" width="38" height="26" rx="3" fill="#ffffff" stroke="#2f9d8c" stroke-width="2"/>
+  <path d="M88 107.5l17 12 17-12" fill="none" stroke="#2f9d8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

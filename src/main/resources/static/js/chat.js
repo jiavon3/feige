@@ -38,8 +38,9 @@
     var quoteWho = document.getElementById("quoteWho");
     var quoteText = document.getElementById("quoteText");
     var pendingImages = [];
-    var pendingFile = null;
+    var pendingFiles = [];
     var MAX_IMAGES = 9;
+    var MAX_FILES = 20;
     var FONT_KEY = "feige.composerFont";
     var FONT_SIZES = [
         {id: "sm", label: "小", size: "15px"},
@@ -492,7 +493,7 @@
             if (item.url) URL.revokeObjectURL(item.url);
         });
         pendingImages = [];
-        pendingFile = null;
+        pendingFiles = [];
         imageInput.value = "";
         fileInput.value = "";
         fileName.textContent = "";
@@ -502,14 +503,34 @@
 
     function renderAttachments() {
         attachThumbs.innerHTML = "";
-        if (!pendingImages.length && !pendingFile) {
+        if (!pendingImages.length && !pendingFiles.length) {
             attachPreview.hidden = true;
             fileName.textContent = "";
             return;
         }
         attachPreview.hidden = false;
-        if (pendingFile) {
-            fileName.textContent = pendingFile.name || "附件";
+        if (pendingFiles.length) {
+            fileName.textContent = "";
+            pendingFiles.forEach(function (file, index) {
+                var chip = document.createElement("div");
+                chip.className = "attach-file";
+                var name = document.createElement("span");
+                name.className = "attach-file-name";
+                name.textContent = file.name || "附件";
+                name.title = file.name || "附件";
+                var remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "remove";
+                remove.textContent = "×";
+                remove.setAttribute("aria-label", "移除 " + (file.name || "附件"));
+                remove.addEventListener("click", function () {
+                    pendingFiles.splice(index, 1);
+                    renderAttachments();
+                });
+                chip.appendChild(name);
+                chip.appendChild(remove);
+                attachThumbs.appendChild(chip);
+            });
             return;
         }
         fileName.textContent = pendingImages.length + " 张图片";
@@ -555,7 +576,7 @@
             added += 1;
         });
         if (added) {
-            pendingFile = null;
+            pendingFiles = [];
             fileInput.value = "";
             renderAttachments();
             flash("");
@@ -581,23 +602,45 @@
         });
     }
 
-    function uploadImagesSequentially(files) {
+    function uploadSequentially(files, kind) {
         var quoteId = quoteTarget ? quoteTarget.id : null;
         var chain = Promise.resolve();
         files.forEach(function (file, index) {
             chain = chain.then(function () {
-                return uploadOne(file, "image", index === 0 ? quoteId : null);
+                return uploadOne(file, kind, index === 0 ? quoteId : null);
             });
         });
         return chain;
     }
 
     fileInput.addEventListener("change", function () {
-        if (fileInput.files[0]) {
-            clearAttachment();
-            pendingFile = fileInput.files[0];
-            renderAttachments();
-        }
+        var list = fileInput.files;
+        if (!list || !list.length) return;
+        var chosen = [];
+        for (var i = 0; i < list.length; i++) chosen.push(list[i]);
+        pendingImages.forEach(function (item) {
+            if (item.url) URL.revokeObjectURL(item.url);
+        });
+        pendingImages = [];
+        imageInput.value = "";
+        attachThumbs.innerHTML = "";
+        var skipped = 0;
+        chosen.forEach(function (file) {
+            if (!file || file.size === 0 || file.size > 100 * 1024 * 1024) {
+                skipped += 1;
+                return;
+            }
+            if (pendingFiles.length >= MAX_FILES) {
+                skipped += 1;
+                return;
+            }
+            pendingFiles.push(file);
+        });
+        fileInput.value = "";
+        renderAttachments();
+        if (skipped && pendingFiles.length) flash("已添加部分文件，单个不超过 100MB，最多 " + MAX_FILES + " 个");
+        else if (skipped) flash("请选择有效文件，单个不超过 100MB，最多 " + MAX_FILES + " 个");
+        else flash("");
     });
     imageInput.addEventListener("change", function () {
         if (imageInput.files && imageInput.files.length) {
@@ -775,7 +818,7 @@
         closePopovers();
         if (pendingImages.length) {
             var files = pendingImages.map(function (item) { return item.file; });
-            uploadImagesSequentially(files).then(function () {
+            uploadSequentially(files, "image").then(function () {
                 clearAttachment();
                 clearQuote();
             }).catch(function (err) {
@@ -783,16 +826,15 @@
             });
             return;
         }
-        if (pendingFile) {
-            if (pendingFile.size > 100 * 1024 * 1024) {
-                flash("文件不能超过 100MB");
+        if (pendingFiles.length) {
+            var invalid = pendingFiles.some(function (file) {
+                return !file || file.size === 0 || file.size > 100 * 1024 * 1024;
+            });
+            if (invalid) {
+                flash("每个文件不能为空，且不能超过 100MB");
                 return;
             }
-            if (pendingFile.size === 0) {
-                flash("不能上传空文件");
-                return;
-            }
-            uploadOne(pendingFile, "file", quoteTarget ? quoteTarget.id : null).then(function () {
+            uploadSequentially(pendingFiles.slice(), "file").then(function () {
                 clearAttachment();
                 clearQuote();
             }).catch(function (err) {

@@ -13,6 +13,15 @@ if [[ $# -ge 1 ]]; then
 fi
 PORT="${PORT:-8080}"
 
+# 防止已经有实例在跑，导致 H2 文件锁冲突
+EXISTING_PIDS=$(pgrep -f "${ROOT}/target/feige.jar" || true)
+if [[ -n "$EXISTING_PIDS" ]]; then
+  echo "检测到已有飞鸽进程在运行:" >&2
+  echo "$EXISTING_PIDS" >&2
+  echo "请先停止它再启动，或执行: kill $EXISTING_PIDS" >&2
+  exit 1
+fi
+
 if ! command -v java >/dev/null 2>&1; then
   echo "找不到 java，请先安装 JDK 8+ 并加入 PATH" >&2
   exit 1

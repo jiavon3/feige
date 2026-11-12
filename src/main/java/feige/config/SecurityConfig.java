@@ -30,7 +30,7 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/register").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/theme").permitAll()
-                .antMatchers("/login", "/register", "/css/**", "/js/**", "/favicon.svg", "/favicon.png", "/hero-mark.png").permitAll()
+                .antMatchers("/login", "/register", "/css/**", "/js/**", "/favicon.svg", "/favicon.png", "/hero-mark.png", "/hero-mark.svg", "/dove-icon.svg").permitAll()
                 .antMatchers("/admin", "/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
