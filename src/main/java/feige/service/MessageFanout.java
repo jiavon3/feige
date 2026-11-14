@@ -57,6 +57,17 @@ public class MessageFanout {
         push.sendToUsers(Collections.singletonList(userId), payload);
     }
 
+    public void deliverConversationCleared(long conversationId) {
+        Conversation conversation = conversations.findById(conversationId).orElse(null);
+        if (conversation == null) {
+            return;
+        }
+        Map<String, Object> payload = new LinkedHashMap<String, Object>();
+        payload.put("type", "conversation.cleared");
+        payload.put("conversationId", conversationId);
+        deliverToConversation(conversation, payload);
+    }
+
     private void deliverToConversation(Conversation conversation, Map<String, Object> payload) {
         if (conversation.getType() == ConversationType.HALL) {
             push.sendToAll(payload);

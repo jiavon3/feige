@@ -10,12 +10,17 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
@@ -83,6 +88,29 @@ class ChatFlowTest extends AbstractFeigeTest {
         socketHub.closeUser(left.getId());
         socketHub.closeUser(right.getId());
         socketHub.closeUser(outsider.getId());
+    }
+
+    @Test
+    void clearingConversationRemovesOnlyItsMessagesAndFiles() throws Exception {
+        UserAccount left = accountService.register("张三", "secret1");
+        UserAccount right = accountService.register("李四", "secret1");
+        UserAccount outsider = accountService.register("王五", "secret1");
+        long hallId = chatService.hallId();
+        ConversationView direct = chatService.openDirect(left.getId(), right.getId());
+        chatService.sendText(left.getId(), hallId, "大厅保留", null);
+        chatService.sendText(left.getId(), direct.getId(), "私聊删除", null);
+        chatService.saveUpload(left.getId(), direct.getId(), "note.txt",
+                new ByteArrayInputStream("hello".getBytes(StandardCharsets.UTF_8)), null);
+        assertTrue(Files.list(fileStorage.directory().toPath()).findAny().isPresent());
+
+        chatService.clearConversation(left.getId(), direct.getId());
+
+        assertEquals(0, chatService.history(left.getId(), direct.getId(), null, 50).getMessages().size());
+        assertEquals(1, chatService.history(left.getId(), hallId, null, 50).getMessages().size());
+        assertFalse(Files.list(fileStorage.directory().toPath()).findAny().isPresent());
+        ApiException forbidden = assertThrows(ApiException.class,
+                () -> chatService.clearConversation(outsider.getId(), direct.getId()));
+        assertEquals(ChatService.FORBIDDEN, forbidden.getMessage());
     }
 
     @Test

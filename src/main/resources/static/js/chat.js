@@ -11,6 +11,7 @@
     var quoteTarget = null;
     var hasMore = false;
     var oldestId = null;
+    var historySeq = 0;
     var RECALL_MS = 2 * 60 * 1000;
 
     var hallButton = document.getElementById("hall");
@@ -22,7 +23,7 @@
     var alertFaviconUrl = null;
     var log = document.getElementById("log");
     var status = document.getElementById("status");
-    var flashBox = document.getElementById("flash");
+    var toastStack = document.getElementById("toastStack");
     var form = document.getElementById("composer");
     var text = document.getElementById("text");
     var fileInput = document.getElementById("file");
@@ -36,11 +37,11 @@
     var fontPanel = document.getElementById("fontPanel");
     var fontSizeChips = document.getElementById("fontSizeChips");
     var fontStyleChips = document.getElementById("fontStyleChips");
+    var clearConversationBtn = document.getElementById("clearConversation");
     var quoteBar = document.getElementById("quoteBar");
     var quoteWho = document.getElementById("quoteWho");
     var quoteText = document.getElementById("quoteText");
     var meAvatar = document.getElementById("meAvatar");
-    var meAvatarImg = document.getElementById("meAvatarImg");
     var meName = document.getElementById("meName");
     var avatarPicker = document.getElementById("avatarPicker");
     var avatarGrid = document.getElementById("avatarGrid");
@@ -50,7 +51,6 @@
     var adminModal = document.getElementById("adminModal");
     var adminClose = document.getElementById("adminClose");
     var adminClear = document.getElementById("adminClear");
-    var adminFlash = document.getElementById("adminFlash");
     var adminRows = document.getElementById("adminRows");
     var adminEmpty = document.getElementById("adminEmpty");
     var settingsModal = document.getElementById("settingsModal");
@@ -93,9 +93,34 @@
         "🍀", "🌸", "🐶", "🐱", "☕", "🍺", "🍕", "🚀"
     ];
 
+    var TOAST_MS = 3200;
+
     function flash(message) {
-        flashBox.textContent = message;
-        flashBox.hidden = !message;
+        if (!message) return;
+        var visible = toastStack.querySelectorAll(".toast");
+        for (var i = 0; i < visible.length; i++) {
+            if (visible[i].textContent === message) return;
+        }
+        var toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
+        toast.addEventListener("click", function () { dismissToast(toast); });
+        toastStack.appendChild(toast);
+        while (toastStack.children.length > 3) {
+            toastStack.removeChild(toastStack.firstChild);
+        }
+        window.setTimeout(function () { toast.classList.add("show"); }, 10);
+        toast.dismissTimer = window.setTimeout(function () { dismissToast(toast); }, TOAST_MS);
+    }
+
+    function dismissToast(toast) {
+        if (!toast.parentNode || toast.classList.contains("hide")) return;
+        window.clearTimeout(toast.dismissTimer);
+        toast.classList.remove("show");
+        toast.classList.add("hide");
+        window.setTimeout(function () {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 200);
     }
 
     function escapeHtml(value) {
@@ -209,6 +234,20 @@
 
     document.getElementById("quoteCancel").addEventListener("click", clearQuote);
 
+    clearConversationBtn.addEventListener("click", function () {
+        if (!activeId) return;
+        if (!confirm("确定清空「" + activeTitle + "」的全部消息吗？消息和文件都会删除，且无法恢复。")) return;
+        api("/api/conversations/" + activeId + "/messages", {method: "DELETE"}).then(function (response) {
+            if (!response.ok) {
+                return response.json().then(function (body) { flash(body.message || "清空失败"); });
+            }
+            clearLoadedConversation();
+            flash("本会话消息已清空");
+        }).catch(function (err) {
+            flash(err.message || "清空失败");
+        });
+    });
+
     function renderBadge(el, count) {
         var label = badgeLabel(count);
         if (!label) {
@@ -228,6 +267,24 @@
         return user.nickname || user.username;
     }
 
+    var AVATAR_COLORS = ["#2f7a6d", "#4a7ea8", "#a96f45", "#7d6aa8", "#588a5c", "#a85b74", "#63788c", "#96763f"];
+
+    function avatarInner(user) {
+        if (user.avatar) {
+            return "<img src='" + escapeHtml(user.avatar) + "' alt=''>";
+        }
+        var name = user.nickname || user.username || "";
+        var initial = name.trim().charAt(0).toUpperCase() || "?";
+        var seed = user.id != null ? String(user.id) : name;
+        var hash = 0;
+        for (var i = 0; i < seed.length; i++) {
+            hash = (hash * 31 + seed.charCodeAt(i)) | 0;
+        }
+        var color = AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+        return "<span class='avatar-initial' style='background:" + color + "'>"
+            + escapeHtml(initial) + "</span>";
+    }
+
     function renderUsers() {
         users.sort(function (a, b) {
             if (a.online !== b.online) return a.online ? -1 : 1;
@@ -243,8 +300,7 @@
             button.type = "button";
             button.className = "person" + (activeId === user.conversationId ? " active" : "");
             var unread = user.unreadCount || 0;
-            var avatarUrl = user.avatar || "/favicon.png?v=2";
-            button.innerHTML = "<span class='person-avatar'><img src='" + escapeHtml(avatarUrl) + "' alt=''></span>"
+            button.innerHTML = "<span class='person-avatar'>" + avatarInner(user) + "</span>"
                 + "<span class='person-main'><span class='dot" + (user.online ? " on" : "") + "'></span>"
                 + "<span class='person-name'>" + escapeHtml(displayName(user)) + "</span>"
                 + (unread ? "<span class='badge'>" + escapeHtml(badgeLabel(unread)) + "</span>" : "")
@@ -324,6 +380,7 @@
 
     function applyMessageDom(row, message) {
         var mine = me && message.senderId === me.id;
+        var showSender = !me || message.conversationId === me.hallConversationId;
         var when = new Date(message.createdAt).toLocaleString();
         var actions = "";
         if (!message.recalled) {
@@ -333,10 +390,12 @@
                 + "</div>";
         }
         row.className = "bubble" + (mine ? " mine" : "") + (message.recalled ? " recalled-row" : "");
-        row.innerHTML = "<div class='meta'><span class='who'>" + escapeHtml(message.senderName) + "</span>"
-            + "<time class='when'>" + escapeHtml(when) + "</time></div>"
-            + "<div class='bubble-body'>" + quoteBlock(message) + messageBodyHtml(message) + "</div>"
-            + actions;
+        row.innerHTML = "<div class='bubble-body'>" + quoteBlock(message) + messageBodyHtml(message) + "</div>"
+            + "<div class='bubble-foot'>"
+            + (showSender ? "<span class='who'>" + escapeHtml(message.senderName) + "</span>" : "")
+            + "<time class='when'>" + escapeHtml(when) + "</time>"
+            + actions
+            + "</div>";
         bindActions(row, message);
     }
 
@@ -374,11 +433,12 @@
 
     function loadHistory() {
         var requestedId = activeId;
+        var seq = ++historySeq;
         if (!requestedId) return;
         api("/api/conversations/" + requestedId + "/messages?limit=50").then(function (response) {
             return response.json();
         }).then(function (page) {
-            if (requestedId !== activeId) return;
+            if (requestedId !== activeId || seq !== historySeq) return;
             log.innerHTML = "";
             hasMore = !!page.hasMore;
             var messages = page.messages || [];
@@ -391,13 +451,14 @@
 
     function loadOlder() {
         var requestedId = activeId;
+        var seq = historySeq;
         if (!requestedId || !hasMore || !oldestId) return;
         var before = oldestId;
         var previousHeight = log.scrollHeight;
         api("/api/conversations/" + requestedId + "/messages?limit=50&beforeId=" + before).then(function (response) {
             return response.json();
         }).then(function (page) {
-            if (requestedId !== activeId) return;
+            if (requestedId !== activeId || seq !== historySeq) return;
             hasMore = !!page.hasMore;
             var messages = page.messages || [];
             if (messages.length) oldestId = messages[0].id;
@@ -407,6 +468,14 @@
             ensureHistoryButton();
             log.scrollTop = log.scrollHeight - previousHeight;
         });
+    }
+
+    function clearLoadedConversation() {
+        historySeq++;
+        log.innerHTML = "";
+        hasMore = false;
+        oldestId = null;
+        clearQuote();
     }
 
     function markRead() {
@@ -531,6 +600,19 @@
                     renderUsers();
                 }
             }
+            if (data.type === "conversation.cleared") {
+                if (data.conversationId === me.hallConversationId) {
+                    hallUnread = 0;
+                    renderHallBadge();
+                } else {
+                    users.forEach(function (user) {
+                        if (user.conversationId === data.conversationId) user.unreadCount = 0;
+                    });
+                    renderUsers();
+                }
+                if (data.conversationId === activeId) clearLoadedConversation();
+                flash("本会话消息已清空");
+            }
             if (data.type === "error") flash(data.message);
             if (data.type === "presence") {
                 var found = false;
@@ -576,7 +658,7 @@
                 showConversation(me.hallConversationId, "大厅");
             }
             if (data.type === "cleared") {
-                flash("聊天记录和文件已清空");
+                flash("已清空全部聊天记录和文件");
                 showConversation(me.hallConversationId, "大厅");
             }
             if (data.type === "theme") applyTheme(data.theme);
@@ -816,7 +898,7 @@
 
     function renderMe() {
         if (!me) return;
-        meAvatarImg.src = me.avatar || "/favicon.png?v=2";
+        meAvatar.innerHTML = avatarInner(me);
         meName.textContent = me.nickname || me.username;
     }
 
@@ -829,8 +911,6 @@
     }
 
     function openAdminModal() {
-        adminFlash.textContent = "";
-        adminFlash.hidden = true;
         adminModal.hidden = false;
         loadAdminUsers();
     }
@@ -840,8 +920,7 @@
     }
 
     function showAdminMessage(message) {
-        adminFlash.textContent = message;
-        adminFlash.hidden = !message;
+        flash(message);
     }
 
     function loadAdminUsers() {

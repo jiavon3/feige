@@ -257,10 +257,65 @@ button.text {
     padding: 0;
 }
 
-.error, .flash {
+.error {
     color: #9a3412;
     background: #ffedd5;
     padding: 8px 10px;
+}
+
+.toast-stack {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: min(92vw, 460px);
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.toast {
+    position: relative;
+    max-width: 100%;
+    padding: 10px 16px 10px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(20, 32, 28, 0.94);
+    color: #f3faf7;
+    font-size: 13px;
+    line-height: 1.45;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.toast::before {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: #5eead4;
+    box-shadow: 0 0 8px rgba(94, 234, 212, 0.7);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.toast.hide {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
 }
 
 .app {
@@ -495,30 +550,53 @@ aside .dot.on {
     gap: 12px;
 }
 
-.brand { justify-content: flex-start; }
+.brand {
+    justify-content: flex-start;
+    margin: 0 0 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
 .brand-lockup {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     color: inherit;
     text-decoration: none;
-    padding: 4px 6px 4px 2px;
-    border-radius: 10px;
-    transition: background 0.15s ease;
+    padding: 6px 10px 6px 6px;
+    border-radius: 14px;
+    transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .brand-lockup:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.09);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
 }
 
 .brand-mark {
-    width: 28px;
-    height: 28px;
+    width: 34px;
+    height: 34px;
     display: block;
     flex: none;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.brand-tag {
+    color: rgba(243, 250, 247, 0.55);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
 }
 
 .me, .nav-label { color: #c8bba8; font-size: 13px; }
@@ -552,6 +630,22 @@ aside .dot.on {
     object-fit: cover;
     display: block;
 }
+
+.avatar-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    user-select: none;
+}
+
+.person-avatar .avatar-initial { font-size: 13px; }
 
 .person-main {
     flex: 1;
@@ -641,7 +735,7 @@ main {
 .bubble {
     max-width: min(520px, 78%);
     margin: 0 0 16px;
-    padding: 12px 14px;
+    padding: 12px 14px 6px 14px;
     background: #fff;
     border: 1px solid rgba(213, 224, 219, 0.95);
     border-radius: 18px 18px 18px 6px;
@@ -665,19 +759,19 @@ main {
     box-shadow: none;
 }
 
-.meta {
+.bubble-foot {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
+    margin-top: 3px;
+    padding: 7px 0 0 0;
+    border-top: 1px solid rgba(47, 122, 109, 0.12);
     color: var(--muted);
     font-size: 12px;
-    margin-bottom: 8px;
+    line-height: 1;
 }
 
-.bubble.mine .meta { flex-direction: row-reverse; }
-
-.meta .who {
+.bubble-foot .who {
     color: var(--ink);
     font-weight: 600;
     min-width: 0;
@@ -686,7 +780,13 @@ main {
     white-space: nowrap;
 }
 
-.meta .when {
+.bubble-foot .who + .when::before {
+    content: "·";
+    margin-right: 6px;
+    opacity: 0.5;
+}
+
+.bubble-foot .when {
     flex: none;
     opacity: 0.85;
     font-variant-numeric: tabular-nums;
@@ -725,23 +825,30 @@ main {
 
 .quote-bar[hidden],
 .badge[hidden],
-.flash[hidden],
 .status[hidden] {
     display: none !important;
 }
 
 .quote-bar .ink { color: var(--ink); }
 
-.actions {
-    margin-top: 10px;
+.bubble-foot .actions {
     display: flex;
-    gap: 8px;
+    gap: 4px;
+    margin-left: auto;
     opacity: 0.72;
+    transition: opacity 0.15s ease;
 }
 
-.bubble:hover .actions { opacity: 1; }
+.bubble:hover .bubble-foot .actions { opacity: 1; }
 
-.bubble.mine .actions { justify-content: flex-end; }
+.bubble-foot .linkish {
+    padding: 1px 7px;
+    border-radius: 999px;
+    line-height: 1;
+    transition: background 0.15s ease;
+}
+
+.bubble-foot .linkish:hover { background: rgba(47, 122, 109, 0.1); }
 
 .linkish {
     background: transparent;
@@ -824,6 +931,16 @@ main {
 .tool-btn[aria-expanded="true"] {
     background: rgba(47, 122, 109, 0.1);
     color: var(--seal);
+}
+
+.tool-btn.danger-tool:hover {
+    background: rgba(180, 35, 24, 0.1);
+    color: #b42318;
+}
+
+.tool-btn.danger-tool svg {
+    width: 20px;
+    height: 20px;
 }
 
 .tool-btn input { display: none; }
@@ -1258,9 +1375,25 @@ html[data-theme="signal"] .me-avatar:hover {
     box-shadow: 0 0 0 2px rgba(94, 234, 212, 0.25);
 }
 
-html[data-theme="signal"] .brand-lockup:hover {
-    background: rgba(94, 234, 212, 0.08);
+html[data-theme="signal"] .brand {
+    border-bottom-color: var(--line);
 }
+
+html[data-theme="signal"] .brand-lockup:hover {
+    background: rgba(94, 234, 212, 0.07);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="signal"] .brand-mark {
+    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.26), 0 0 22px rgba(94, 234, 212, 0.16);
+}
+
+html[data-theme="signal"] .brand-tag {
+    color: rgba(139, 163, 172, 0.72);
+    font-family: "SF Mono", "ui-monospace", Menlo, Consolas, monospace;
+    letter-spacing: 0.1em;
+}
+
 html[data-theme="signal"] .quote-bar,
 html[data-theme="signal"] table {
     border: 1px solid var(--line);
@@ -1416,9 +1549,17 @@ html[data-theme="signal"] .bubble.recalled-row {
     box-shadow: none;
 }
 
-html[data-theme="signal"] .meta .who { color: #dbfff8; }
+html[data-theme="signal"] .bubble-foot .who { color: #dbfff8; }
 
-html[data-theme="signal"] .meta .when { color: rgba(139, 163, 172, 0.85); }
+html[data-theme="signal"] .bubble-foot .when { color: rgba(139, 163, 172, 0.85); }
+
+html[data-theme="signal"] .bubble-foot {
+    border-top-color: rgba(94, 234, 212, 0.12);
+}
+
+html[data-theme="signal"] .bubble-foot .linkish:hover {
+    background: rgba(94, 234, 212, 0.12);
+}
 
 html[data-theme="signal"] .history-more {
     background: rgba(15, 27, 26, 0.72);
@@ -1552,6 +1693,11 @@ html[data-theme="signal"] .tool-btn[aria-expanded="true"] {
     color: var(--seal);
 }
 
+html[data-theme="signal"] .tool-btn.danger-tool:hover {
+    background: rgba(255, 107, 90, 0.12);
+    color: #ffb4a8;
+}
+
 html[data-theme="signal"] .composer textarea {
     background: transparent;
     color: var(--ink);
@@ -1646,12 +1792,18 @@ html[data-theme="signal"] .danger {
     border-radius: 999px;
 }
 
-html[data-theme="signal"] .error,
-html[data-theme="signal"] .flash {
+html[data-theme="signal"] .error {
     color: #ffd0c8;
     background: rgba(255, 107, 90, 0.12);
     border: 1px solid rgba(255, 107, 90, 0.35);
     border-radius: 10px;
+}
+
+html[data-theme="signal"] .toast {
+    background: rgba(15, 27, 26, 0.96);
+    color: var(--ink);
+    border-color: rgba(94, 234, 212, 0.28);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(94, 234, 212, 0.06);
 }
 
 html[data-theme="signal"] .dot { background: #35505b; box-shadow: none; }
@@ -1660,7 +1812,7 @@ html[data-theme="signal"] .dot.on {
     box-shadow: 0 0 10px rgba(94, 234, 212, 0.65);
 }
 
-html[data-theme="signal"] .meta,
+html[data-theme="signal"] .bubble-foot,
 html[data-theme="signal"] .me,
 html[data-theme="signal"] .nav-label,
 html[data-theme="signal"] .lede,
@@ -2339,11 +2491,6 @@ html[data-theme="signal"] .gate-dove .gate-submit:hover {
 .empty-state {
     padding: 22px 0;
     text-align: center;
-}
-
-.admin-body .flash {
-    border-radius: 10px;
-    font-size: 13px;
 }
 
 @media (max-width: 560px) {

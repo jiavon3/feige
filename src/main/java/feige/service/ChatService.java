@@ -167,8 +167,7 @@ public class ChatService {
     }
 
     @Transactional
-    public long markRead(long userId, long conversationId) {
-        Conversation conversation = requireConversation(conversationId);
+    public long markRead(long userId, long conversationId) {        Conversation conversation = requireConversation(conversationId);
         assertAccess(userId, conversation);
         ConversationMember membership = requireMembership(userId, conversation);
         long latest = messages.findFirstByConversation_IdOrderByIdDesc(conversationId)
@@ -179,6 +178,20 @@ public class ChatService {
             members.save(membership);
         }
         return latest;
+    }
+
+    @Transactional
+    public void clearConversation(long userId, long conversationId) {
+        Conversation conversation = requireConversation(conversationId);
+        assertAccess(userId, conversation);
+        List<String> storedNames = messages.findStoredNamesByConversationId(conversationId);
+        messages.deleteByConversationId(conversationId);
+        for (ConversationMember membership : members.findByConversation_IdIn(Collections.singletonList(conversationId))) {
+            membership.setLastReadMessageId(null);
+        }
+        for (String storedName : storedNames) {
+            files.deleteQuietly(storedName);
+        }
     }
 
     @Transactional(readOnly = true)

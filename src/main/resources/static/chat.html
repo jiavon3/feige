@@ -21,7 +21,10 @@
         <div class="brand">
             <a class="brand-lockup" href="/chat">
                 <img class="brand-mark" src="/favicon.png?v=2" alt="">
-                <span class="mark">飞鸽</span>
+                <span class="brand-text">
+                    <span class="mark">飞鸽</span>
+                    <span class="brand-tag">局域网 · 即时通信</span>
+                </span>
             </a>
         </div>
         <button id="hall" class="nav active" type="button">
@@ -33,9 +36,7 @@
 
         <div class="user-bar">
             <div class="me-wrap">
-                <button id="meAvatar" class="me-avatar" type="button" aria-label="更换头像">
-                    <img id="meAvatarImg" src="/favicon.png?v=2" alt="">
-                </button>
+                <button id="meAvatar" class="me-avatar" type="button" aria-label="更换头像"></button>
                 <button id="meName" class="me-name" type="button" aria-label="打开菜单"></button>
 
                 <div id="avatarPicker" class="avatar-picker" hidden role="dialog" aria-label="选择头像">
@@ -62,7 +63,6 @@
         <header class="thread-head">
             <h1 id="title">大厅</h1>
             <p id="status" class="status" hidden>连接已断开，正在重连</p>
-            <p id="flash" class="flash" hidden></p>
         </header>
         <div id="log" class="log"></div>
         <div id="quoteBar" class="quote-bar" hidden>
@@ -105,6 +105,9 @@
                                 </div>
                             </div>
                         </div>
+                        <button id="clearConversation" class="tool-btn danger-tool" type="button" title="清空本会话消息" aria-label="清空本会话消息">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.5h15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9.5 6.5V5.2c0-.9.8-1.7 1.7-1.7h1.6c.9 0 1.7.8 1.7 1.7v1.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.8 6.5l.8 12.1c.1 1 .9 1.9 1.9 1.9h5c1 0 1.8-.8 1.9-1.9l.8-12.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 10.5v6.2M14 10.5v6.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                        </button>
                     </div>
                     <span class="composer-hint">粘贴图片 · Enter 发送</span>
                 </div>
@@ -205,7 +208,6 @@
                     <button id="adminClear" class="danger" type="button">清空全部聊天记录和文件</button>
                 </div>
                 <p class="lede">删除用户会带走他的消息、文件，以及他参与的私聊。清空只删记录和文件，账号都还在。</p>
-                <p id="adminFlash" class="flash" hidden></p>
                 <div class="records-table">
                     <table>
                         <thead>
@@ -219,6 +221,7 @@
         </div>
     </div>
 </div>
+<div id="toastStack" class="toast-stack" role="status" aria-live="polite"></div>
 <script src="/js/csrf.js"></script>
 <script src="/js/theme.js"></script>
 <script src="/js/chat.js"></script>

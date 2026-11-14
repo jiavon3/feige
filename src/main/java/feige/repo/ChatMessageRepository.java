@@ -3,6 +3,7 @@ package feige.repo;
 import feige.domain.ChatMessage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -13,6 +14,14 @@ import java.util.Optional;
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
     List<ChatMessage> findByConversation_IdIn(Collection<Long> conversationIds);
+
+    @Query("select m.storedName from ChatMessage m where m.conversation.id = :conversationId "
+            + "and m.storedName is not null")
+    List<String> findStoredNamesByConversationId(@Param("conversationId") long conversationId);
+
+    @Modifying
+    @Query("delete from ChatMessage m where m.conversation.id = :conversationId")
+    void deleteByConversationId(@Param("conversationId") long conversationId);
 
     @Query("select m from ChatMessage m where m.sender.id = :senderId "
             + "and m.conversation.type = feige.domain.ConversationType.HALL")

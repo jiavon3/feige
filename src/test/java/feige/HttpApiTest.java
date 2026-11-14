@@ -13,6 +13,7 @@ import org.springframework.util.StreamUtils;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -85,6 +86,17 @@ class HttpApiTest extends AbstractFeigeTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("新昵称"))
                 .andExpect(jsonPath("$.avatar").value("/avatars/avatar3.png"));
+    }
+
+    @Test
+    void clearingConversationEndpointRemovesItsMessages() throws Exception {
+        UserAccount user = accountService.register("张三", "secret1");
+        chatService.sendText(user.getId(), chatService.hallId(), "要清掉", null);
+        mockMvc.perform(delete("/api/conversations/" + chatService.hallId() + "/messages")
+                        .with(user(new FeigeUser(user)))
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
+        assertEquals(0, messageRepository.count());
     }
 
     @Test

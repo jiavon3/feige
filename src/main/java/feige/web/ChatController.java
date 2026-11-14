@@ -12,7 +12,9 @@ import feige.service.MessageView;
 import feige.service.PresenceService;
 import feige.service.ProfileService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -94,6 +96,13 @@ public class ChatController {
         body.put("conversationId", id);
         body.put("lastReadMessageId", lastRead);
         return body;
+    }
+
+    @DeleteMapping("/api/conversations/{id}/messages")
+    public ResponseEntity<Void> clear(@AuthenticationPrincipal FeigeUser user, @PathVariable("id") long id) {
+        chats.clearConversation(user.getId(), id);
+        fanout.deliverConversationCleared(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/api/messages/{id}/recall")
