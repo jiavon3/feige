@@ -2,11 +2,14 @@ package feige.web;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feige.domain.UserAccount;
+import feige.repo.UserAccountRepository;
 import feige.service.ApiException;
 import feige.service.ChatService;
 import feige.service.MessageFanout;
 import feige.service.MessageView;
 import feige.service.PresenceService;
+import feige.service.ProfileService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -23,14 +26,19 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private final MessageFanout fanout;
     private final SocketHub hub;
     private final PresenceService presence;
+    private final UserAccountRepository users;
+    private final ProfileService profileService;
     private final ObjectMapper mapper;
 
     public ChatWebSocketHandler(ChatService chats, MessageFanout fanout, SocketHub hub,
-                                PresenceService presence, ObjectMapper mapper) {
+                                PresenceService presence, UserAccountRepository users,
+                                ProfileService profileService, ObjectMapper mapper) {
         this.chats = chats;
         this.fanout = fanout;
         this.hub = hub;
         this.presence = presence;
+        this.users = users;
+        this.profileService = profileService;
         this.mapper = mapper;
     }
 
@@ -43,7 +51,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
         hub.add(userId, session);
         if (presence.connected(userId)) {
-            hub.sendToAll(presence(userId, username(session), true));
+            hub.sendToAll(presence(userId, true));
         }
     }
 
@@ -55,7 +63,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
         hub.remove(userId, session);
         if (presence.disconnected(userId)) {
-            hub.sendToAll(presence(userId, username(session), false));
+            hub.sendToAll(presence(userId, false));
         }
     }
 
@@ -95,12 +103,17 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         return value == null ? "" : value.toString();
     }
 
-    private static Map<String, Object> presence(long userId, String username, boolean online) {
+    private Map<String, Object> presence(long userId, boolean online) {
         Map<String, Object> payload = new LinkedHashMap<String, Object>();
         payload.put("type", "presence");
         payload.put("userId", userId);
-        payload.put("username", username);
         payload.put("online", online);
+        UserAccount account = users.findById(userId).orElse(null);
+        if (account != null) {
+            payload.put("username", account.getUsername());
+            payload.put("nickname", account.getNickname());
+            payload.put("avatar", profileService.resolveAvatarUrl(account.getAvatar()));
+        }
         return payload;
     }
 

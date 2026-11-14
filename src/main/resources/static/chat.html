@@ -23,19 +23,40 @@
                 <img class="brand-mark" src="/favicon.png?v=2" alt="">
                 <span class="mark">飞鸽</span>
             </a>
+        </div>
+        <button id="hall" class="nav active" type="button">
+            <span>大厅</span>
+            <span id="hallBadge" class="badge" hidden></span>
+        </button>
+        <p class="nav-label">联系人</p>
+        <div id="users" class="people"></div>
+
+        <div class="user-bar">
+            <div class="me-wrap">
+                <button id="meAvatar" class="me-avatar" type="button" aria-label="更换头像">
+                    <img id="meAvatarImg" src="/favicon.png?v=2" alt="">
+                </button>
+                <button id="meName" class="me-name" type="button" aria-label="打开菜单"></button>
+
+                <div id="avatarPicker" class="avatar-picker" hidden role="dialog" aria-label="选择头像">
+                    <div class="avatar-grid" id="avatarGrid"></div>
+                    <label class="avatar-upload">
+                        <input id="avatarUpload" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+                        <span>上传自定义头像</span>
+                    </label>
+                </div>
+
+                <div id="nameMenu" class="name-menu" hidden role="menu">
+                    <button type="button" data-action="settings">设置</button>
+                    <button type="button" data-action="password">修改密码</button>
+                    <button id="adminMenuBtn" type="button" data-action="admin" hidden>管理设置</button>
+                </div>
+            </div>
             <form method="post" action="/logout">
                 <input type="hidden" name="_csrf">
                 <button class="text" type="submit">退出</button>
             </form>
         </div>
-        <p id="me" class="me"></p>
-        <a id="adminLink" class="admin-link" href="/admin" hidden>管理账号和记录</a>
-        <button id="hall" class="nav active" type="button">
-            <span>大厅</span>
-            <span id="hallBadge" class="badge" hidden></span>
-        </button>
-        <p class="nav-label">其他人</p>
-        <div id="users" class="people"></div>
     </aside>
     <main>
         <header class="thread-head">
@@ -100,6 +121,103 @@
             </div>
         </form>
     </main>
+</div>
+<div id="settingsModal" class="modal" hidden>
+    <div class="modal-card">
+        <div class="modal-head">
+            <h2>账号设置</h2>
+            <button id="settingsClose" class="text" type="button">关闭</button>
+        </div>
+        <div class="modal-body">
+            <label class="field">
+                <span class="field-label">账号</span>
+                <input id="settingsUsername" type="text" readonly>
+            </label>
+            <label class="field">
+                <span class="field-label">昵称</span>
+                <input id="settingsNickname" type="text" maxlength="30" placeholder="未设置则显示用户名">
+            </label>
+            <p id="settingsError" class="error" hidden></p>
+        </div>
+        <div class="modal-foot">
+            <button id="settingsCancel" class="text" type="button">取消</button>
+            <button id="settingsSave" class="send-btn" type="button">保存</button>
+        </div>
+    </div>
+</div>
+
+<div id="passwordModal" class="modal" hidden>
+    <div class="modal-card">
+        <div class="modal-head">
+            <h2>修改密码</h2>
+            <button id="passwordClose" class="text" type="button">关闭</button>
+        </div>
+        <div class="modal-body">
+            <label class="field">
+                <span class="field-label">当前密码</span>
+                <input id="passwordCurrent" type="password" autocomplete="current-password">
+            </label>
+            <label class="field">
+                <span class="field-label">新密码</span>
+                <input id="passwordNew" type="password" autocomplete="new-password">
+            </label>
+            <label class="field">
+                <span class="field-label">确认新密码</span>
+                <input id="passwordConfirm" type="password" autocomplete="new-password">
+            </label>
+            <p id="passwordError" class="error" hidden></p>
+        </div>
+        <div class="modal-foot">
+            <button id="passwordCancel" class="text" type="button">取消</button>
+            <button id="passwordSave" class="send-btn" type="button">保存</button>
+        </div>
+    </div>
+</div>
+<div id="adminModal" class="modal" hidden>
+    <div class="modal-card wide">
+        <div class="modal-head">
+            <div class="modal-title">
+                <h2>管理设置</h2>
+                <p class="modal-sub">仅管理员可见，修改会立即同步给所有在线用户</p>
+            </div>
+            <button id="adminClose" class="text" type="button">关闭</button>
+        </div>
+        <div class="modal-body admin-body">
+            <section class="themes admin-section">
+                <div class="section-head">
+                    <h3>界面主题</h3>
+                    <span class="section-hint">所有人同步生效</span>
+                </div>
+                <div class="theme-switch">
+                    <button class="choice" type="button" data-theme-choice="classic">
+                        <span class="theme-preview preview-classic" aria-hidden="true"></span>
+                        <span class="theme-copy"><strong>信笺</strong><small>浅色信纸</small></span>
+                    </button>
+                    <button class="choice" type="button" data-theme-choice="signal">
+                        <span class="theme-preview preview-signal" aria-hidden="true"></span>
+                        <span class="theme-copy"><strong>信标</strong><small>深色终端</small></span>
+                    </button>
+                </div>
+            </section>
+            <section class="records admin-section">
+                <div class="section-head">
+                    <h3>账号和记录</h3>
+                    <button id="adminClear" class="danger" type="button">清空全部聊天记录和文件</button>
+                </div>
+                <p class="lede">删除用户会带走他的消息、文件，以及他参与的私聊。清空只删记录和文件，账号都还在。</p>
+                <p id="adminFlash" class="flash" hidden></p>
+                <div class="records-table">
+                    <table>
+                        <thead>
+                        <tr><th>用户名</th><th>注册时间</th><th></th></tr>
+                        </thead>
+                        <tbody id="adminRows"></tbody>
+                    </table>
+                </div>
+                <p id="adminEmpty" class="lede empty-state" hidden>还没有普通用户。</p>
+            </section>
+        </div>
+    </div>
 </div>
 <script src="/js/csrf.js"></script>
 <script src="/js/theme.js"></script>

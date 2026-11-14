@@ -10,6 +10,7 @@ import feige.service.HistoryPage;
 import feige.service.MessageFanout;
 import feige.service.MessageView;
 import feige.service.PresenceService;
+import feige.service.ProfileService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +33,15 @@ public class ChatController {
     private final UserAccountRepository users;
     private final PresenceService presence;
     private final MessageFanout fanout;
+    private final ProfileService profileService;
 
     public ChatController(ChatService chats, UserAccountRepository users, PresenceService presence,
-                          MessageFanout fanout) {
+                          MessageFanout fanout, ProfileService profileService) {
         this.chats = chats;
         this.users = users;
         this.presence = presence;
         this.fanout = fanout;
+        this.profileService = profileService;
     }
 
     @GetMapping("/api/me")
@@ -47,6 +50,8 @@ public class ChatController {
         Map<String, Object> body = new LinkedHashMap<String, Object>();
         body.put("id", user.getId());
         body.put("username", user.getUsername());
+        body.put("nickname", user.getNickname());
+        body.put("avatar", profileService.resolveAvatarUrl(user.getAvatar()));
         body.put("role", user.getRole().name());
         body.put("hallConversationId", hallId);
         body.put("hallUnreadCount", chats.unreadCount(user.getId(), hallId));
@@ -59,7 +64,8 @@ public class ChatController {
         for (UserAccount account : users.findByIdNot(user.getId())) {
             Long conversationId = chats.directConversationId(user.getId(), account.getId());
             int unread = conversationId == null ? 0 : chats.unreadCount(user.getId(), conversationId);
-            views.add(new UserView(account.getId(), account.getUsername(), presence.isOnline(account.getId()),
+            views.add(new UserView(account.getId(), account.getUsername(), account.getNickname(),
+                    profileService.resolveAvatarUrl(account.getAvatar()), presence.isOnline(account.getId()),
                     account.getRole() == Role.ADMIN, conversationId, unread));
         }
         Collections.sort(views, new Comparator<UserView>() {
@@ -68,7 +74,7 @@ public class ChatController {
                 if (left.isOnline() != right.isOnline()) {
                     return left.isOnline() ? -1 : 1;
                 }
-                return left.getUsername().compareToIgnoreCase(right.getUsername());
+                return left.displayName().compareToIgnoreCase(right.displayName());
             }
         });
         return views;
@@ -111,15 +117,19 @@ public class ChatController {
     public static class UserView {
         private final long id;
         private final String username;
+        private final String nickname;
+        private final String avatar;
         private final boolean online;
         private final boolean admin;
         private final Long conversationId;
         private final int unreadCount;
 
-        public UserView(long id, String username, boolean online, boolean admin,
+        public UserView(long id, String username, String nickname, String avatar, boolean online, boolean admin,
                         Long conversationId, int unreadCount) {
             this.id = id;
             this.username = username;
+            this.nickname = nickname;
+            this.avatar = avatar;
             this.online = online;
             this.admin = admin;
             this.conversationId = conversationId;
@@ -132,6 +142,18 @@ public class ChatController {
 
         public String getUsername() {
             return username;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public String displayName() {
+            return nickname != null && !nickname.isEmpty() ? nickname : username;
         }
 
         public boolean isOnline() {

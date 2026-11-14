@@ -27,6 +27,12 @@ public class UserAccount {
     @Column(nullable = false, length = 100)
     private String passwordHash;
 
+    @Column(length = 30)
+    private String nickname;
+
+    @Column(length = 255)
+    private String avatar;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
     private Role role;
@@ -63,6 +69,22 @@ public class UserAccount {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Role getRole() {

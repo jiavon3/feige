@@ -352,6 +352,7 @@ public class ChatService {
     private MessageView toView(ChatMessage message) {
         String body = message.isRecalled() ? "" : message.getBody();
         Long size = message.isRecalled() ? null : message.getSizeBytes();
+        String senderName = displayName(message.getSender());
         String quoteSender = null;
         String quoteKind = null;
         String quoteBody = null;
@@ -360,7 +361,7 @@ public class ChatService {
             if (quoted == null || quoted.isRecalled()) {
                 quoteBody = "引用内容已撤回";
             } else {
-                quoteSender = quoted.getSender().getUsername();
+                quoteSender = displayName(quoted.getSender());
                 quoteKind = quoted.getKind().name();
                 quoteBody = quoteSummary(quoted);
             }
@@ -369,7 +370,7 @@ public class ChatService {
                 message.getId(),
                 message.getConversation().getId(),
                 message.getSender().getId(),
-                message.getSender().getUsername(),
+                senderName,
                 message.getKind().name(),
                 body,
                 size,
@@ -379,6 +380,11 @@ public class ChatService {
                 quoteKind,
                 quoteBody,
                 message.getCreatedAt());
+    }
+
+    private static String displayName(UserAccount account) {
+        String nickname = account.getNickname();
+        return nickname != null && !nickname.isEmpty() ? nickname : account.getUsername();
     }
 
     private static String quoteSummary(ChatMessage quoted) {

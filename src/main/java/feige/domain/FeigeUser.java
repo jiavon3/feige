@@ -11,22 +11,34 @@ import java.util.Locale;
 
 public class FeigeUser implements UserDetails, Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private final long id;
     private final String username;
     private final String passwordHash;
     private final Role role;
+    private final String nickname;
+    private final String avatar;
 
     public FeigeUser(UserAccount account) {
         this.id = account.getId();
         this.username = account.getUsername();
         this.passwordHash = account.getPasswordHash();
         this.role = account.getRole();
+        this.nickname = account.getNickname();
+        this.avatar = account.getAvatar();
     }
 
     public long getId() {
         return id;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public String getAvatar() {
+        return avatar;
     }
 
     public Role getRole() {

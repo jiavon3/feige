@@ -33,9 +33,4 @@ public class PageController {
     public String chat() {
         return "forward:/chat.html";
     }
-
-    @GetMapping("/admin")
-    public String admin() {
-        return "forward:/admin.html";
-    }
 }
