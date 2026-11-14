@@ -1144,28 +1144,65 @@ th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); 
 }
 
 html[data-theme="signal"] {
-    --ink: #d7e6ea;
-    --paper: #0b1210;
-    --card: #121c19;
-    --line: rgba(94, 234, 212, 0.28);
+    color-scheme: dark;
+    --ink: #dcebe9;
+    --paper: #070d0f;
+    --card: #0f1b1a;
+    --line: rgba(110, 231, 212, 0.18);
+    --line-strong: rgba(110, 231, 212, 0.36);
     --seal: #5eead4;
-    --sidebar: #05090f;
-    --sidebar-text: #d7e6ea;
-    --muted: #7f97a3;
+    --seal-dim: #2dd4bf;
+    --sidebar: #060b0e;
+    --sidebar-text: #dcebe9;
+    --muted: #8ba3ac;
     --online: #5eead4;
-    --mine: rgba(94, 234, 212, 0.14);
+    --mine: rgba(94, 234, 212, 0.12);
     --amber: #fbbf24;
+    --glow: 0 0 0 1px rgba(94, 234, 212, 0.04), 0 18px 44px rgba(0, 0, 0, 0.42);
 }
 
 html[data-theme="signal"] body {
     color: var(--ink);
     background:
-        linear-gradient(rgba(94, 234, 212, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(94, 234, 212, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 12% 0%, rgba(94, 234, 212, 0.14), transparent 32%),
+        radial-gradient(1100px 620px at 12% -12%, rgba(94, 234, 212, 0.12), transparent 60%),
+        radial-gradient(900px 520px at 108% 4%, rgba(45, 212, 191, 0.07), transparent 55%),
+        linear-gradient(rgba(94, 234, 212, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(94, 234, 212, 0.035) 1px, transparent 1px),
         var(--paper);
-    background-size: 28px 28px, 28px 28px, auto, auto;
+    background-size: auto, auto, 32px 32px, 32px 32px, auto;
+    background-attachment: fixed;
     font-family: "Avenir Next", "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+}
+
+html[data-theme="signal"] ::selection {
+    background: rgba(94, 234, 212, 0.28);
+    color: #04110f;
+}
+
+html[data-theme="signal"] * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(94, 234, 212, 0.22) transparent;
+}
+
+html[data-theme="signal"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html[data-theme="signal"] ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+html[data-theme="signal"] ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(94, 234, 212, 0.2);
+    background-clip: content-box;
+}
+
+html[data-theme="signal"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(94, 234, 212, 0.34);
+    background-clip: content-box;
 }
 
 html[data-theme="signal"] .mark,
@@ -1174,18 +1211,39 @@ html[data-theme="signal"] h2 {
     font-family: "SF Mono", "ui-monospace", Menlo, Consolas, monospace;
     font-weight: 500;
     letter-spacing: 0.08em;
+    text-shadow: 0 0 28px rgba(94, 234, 212, 0.16);
 }
 
 html[data-theme="signal"] a { color: var(--seal); }
 
 html[data-theme="signal"] aside {
-    background: var(--sidebar);
+    background:
+        radial-gradient(140% 55% at 0% 0%, rgba(94, 234, 212, 0.1), transparent 58%),
+        linear-gradient(180deg, #071014 0%, var(--sidebar) 72%);
     color: var(--sidebar-text);
     border-right: 1px solid var(--line);
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
-    box-shadow: none;
+    box-shadow: inset -1px 0 0 rgba(94, 234, 212, 0.05);
+}
+
+html[data-theme="signal"] aside .nav:hover,
+html[data-theme="signal"] aside .person:hover {
+    background: rgba(94, 234, 212, 0.07);
+}
+
+html[data-theme="signal"] .person-avatar,
+html[data-theme="signal"] .me-avatar {
+    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.22);
+}
+
+html[data-theme="signal"] aside .nav.active,
+html[data-theme="signal"] aside .person.active {
+    background: linear-gradient(90deg, rgba(94, 234, 212, 0.2), rgba(94, 234, 212, 0.04));
+    color: #effffb;
+    font-weight: 600;
+    box-shadow: inset 2px 0 0 var(--seal), 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 html[data-theme="signal"] aside .mark,
@@ -1198,9 +1256,9 @@ html[data-theme="signal"] aside .person {
 
 html[data-theme="signal"] aside button.text {
     color: var(--sidebar-text);
-    background: transparent;
+    background: rgba(255, 255, 255, 0.03);
     border-color: var(--line);
-    border-radius: 2px;
+    border-radius: 999px;
 }
 
 html[data-theme="signal"] aside button.text:hover {
@@ -1227,106 +1285,176 @@ html[data-theme="signal"] .me-avatar:hover {
 html[data-theme="signal"] .brand-lockup:hover {
     background: rgba(94, 234, 212, 0.08);
 }
-
-html[data-theme="signal"] aside .nav.active,
-html[data-theme="signal"] aside .person.active {
-    background: rgba(94, 234, 212, 0.16);
-    color: #effffb;
-    font-weight: 600;
-}
 html[data-theme="signal"] .card,
-html[data-theme="signal"] .bubble,
-html[data-theme="signal"] .thread-head,
-html[data-theme="signal"] .composer,
 html[data-theme="signal"] .quote-bar,
 html[data-theme="signal"] table {
     border: 1px solid var(--line);
-    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.04), 0 16px 40px rgba(0, 0, 0, 0.28);
-}
-
-html[data-theme="signal"] .card,
-html[data-theme="signal"] .thread-head,
-html[data-theme="signal"] .composer,
-html[data-theme="signal"] .quote-bar,
-html[data-theme="signal"] table {
     background: var(--card);
-    border-radius: 2px;
+    border-radius: 12px;
+    box-shadow: var(--glow);
 }
 
-html[data-theme="signal"] .gate,
-html[data-theme="signal"] .gate-brand,
+html[data-theme="signal"] .thread-head {
+    background: linear-gradient(180deg, rgba(94, 234, 212, 0.07), rgba(15, 27, 26, 0.92));
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="signal"] .thread-head h1 {
+    color: #edfffb;
+    letter-spacing: 0.14em;
+}
+
+html[data-theme="signal"] .composer {
+    background: linear-gradient(180deg, rgba(15, 27, 26, 0.96), rgba(10, 19, 18, 0.98));
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+    box-shadow: 0 -16px 38px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="signal"] .gate {
+    background: var(--paper);
+    color: var(--ink);
+}
+
+html[data-theme="signal"] .gate-brand {
+    color: var(--ink);
+    background:
+        radial-gradient(120% 70% at -10% 110%, rgba(94, 234, 212, 0.16), transparent 48%),
+        radial-gradient(90% 55% at 110% -10%, rgba(94, 234, 212, 0.1), transparent 44%),
+        linear-gradient(165deg, #0a1716 0%, #0b221f 46%, #0d2f2b 100%);
+    border-right: 1px solid var(--line);
+}
+
+html[data-theme="signal"] .gate-brand::before,
+html[data-theme="signal"] .gate-brand::after {
+    background-image: radial-gradient(circle, rgba(94, 234, 212, 0.35) 1.2px, transparent 1.5px);
+}
+
+html[data-theme="signal"] .gate-brand-name {
+    color: #eafffb;
+    text-shadow: 0 0 40px rgba(94, 234, 212, 0.35), 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="signal"] .gate-tagline { color: rgba(220, 235, 233, 0.9); }
+
+html[data-theme="signal"] .gate-tagline::before,
+html[data-theme="signal"] .gate-tagline::after {
+    background: rgba(94, 234, 212, 0.45);
+}
+
+html[data-theme="signal"] .gate-sub { color: rgba(220, 235, 233, 0.68); }
+
 html[data-theme="signal"] .gate-panel {
-    color: #fff;
+    background:
+        radial-gradient(70% 50% at 100% 0%, rgba(94, 234, 212, 0.08), transparent 60%),
+        var(--paper);
+    color: var(--ink);
+    font-family: "Avenir Next", "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
 }
-html[data-theme="signal"] .gate-panel,
-html[data-theme="signal"] .gate-field,
-html[data-theme="signal"] .gate .switch {
-    color: #1c1c1c;
-    font-family: "PingFang SC", "Noto Sans SC", sans-serif;
-}
-html[data-theme="signal"] .gate-panel {
-    background: #fbfbfb;
-}
-html[data-theme="signal"] .gate-field { color: #222; }
+
+html[data-theme="signal"] .gate-field { color: var(--muted); }
+
 html[data-theme="signal"] .gate-input {
-    background: #fff;
-    border-color: #e3e3e3;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--line);
 }
+
+html[data-theme="signal"] .gate-input:focus-within {
+    border-color: var(--seal);
+    box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.12);
+}
+
+html[data-theme="signal"] .gate-input svg { color: var(--muted); }
+
 html[data-theme="signal"] .gate-input input {
-    color: #1c1c1c;
+    color: var(--ink);
     background: transparent;
     border: 0;
     box-shadow: none;
 }
+
+html[data-theme="signal"] .gate-input input::placeholder { color: rgba(139, 163, 172, 0.62); }
+
 html[data-theme="signal"] .gate-submit {
-    background: linear-gradient(90deg, #1c8f86 0%, #3ec6b0 100%);
-    color: #fff;
+    background: linear-gradient(135deg, #7ff5e2 0%, #2dd4bf 100%);
+    color: #04211d;
     border: 0;
+    font-weight: 600;
+    box-shadow: 0 12px 30px rgba(94, 234, 212, 0.2);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
+
+html[data-theme="signal"] .gate-submit:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 14px 34px rgba(94, 234, 212, 0.3);
+    transform: translateY(-1px);
+}
+
 html[data-theme="signal"] .gate-eye {
     background: transparent;
     border: 0;
-    color: #9a9a9a;
+    color: var(--muted);
 }
-html[data-theme="signal"] .gate .switch { color: #8a8a8a; }
-html[data-theme="signal"] .gate .switch a { color: #1f8f86; }
+
+html[data-theme="signal"] .gate .switch { color: var(--muted); }
+html[data-theme="signal"] .gate .switch a { color: var(--seal); }
 
 html[data-theme="signal"] .gate-panel .gate-input input,
 html[data-theme="signal"] .gate-panel .gate-input input[type="password"],
 html[data-theme="signal"] .gate-panel .gate-input input[type="text"] {
-    background: #fff !important;
-    color: #1c1c1c !important;
+    background: transparent !important;
+    color: var(--ink) !important;
     border: 0 !important;
     box-shadow: none !important;
-    -webkit-text-fill-color: #1c1c1c;
+    caret-color: var(--seal);
+    -webkit-text-fill-color: var(--ink);
 }
 
 html[data-theme="signal"] .log {
     background:
-        radial-gradient(circle at 12% 0%, rgba(94, 234, 212, 0.08), transparent 28%),
-        linear-gradient(180deg, rgba(18, 28, 25, 0.55), transparent 140px),
+        radial-gradient(900px 480px at 18% 0%, rgba(94, 234, 212, 0.06), transparent 60%),
+        linear-gradient(rgba(94, 234, 212, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(94, 234, 212, 0.025) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(15, 27, 26, 0.35), transparent 160px),
         var(--paper);
+    background-size: auto, 32px 32px, 32px 32px, auto, auto;
 }
 
 html[data-theme="signal"] .bubble {
-    background: var(--card);
-    border-radius: 16px 16px 16px 4px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 70%), var(--card);
+    border: 1px solid rgba(94, 234, 212, 0.14);
+    border-radius: 16px 16px 16px 6px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.26);
 }
 
 html[data-theme="signal"] .bubble.mine {
-    border-radius: 16px 16px 4px 16px;
+    background: linear-gradient(180deg, rgba(94, 234, 212, 0.16), rgba(94, 234, 212, 0.05));
+    border-color: rgba(94, 234, 212, 0.38);
+    border-radius: 16px 16px 6px 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(94, 234, 212, 0.05);
 }
 
 html[data-theme="signal"] .bubble.recalled-row {
-    background: rgba(18, 28, 25, 0.45);
+    background: rgba(15, 27, 26, 0.5);
+    border-color: rgba(94, 234, 212, 0.1);
+    box-shadow: none;
 }
 
-html[data-theme="signal"] .meta .who { color: var(--ink); }
+html[data-theme="signal"] .meta .who { color: #dbfff8; }
+
+html[data-theme="signal"] .meta .when { color: rgba(139, 163, 172, 0.85); }
 
 html[data-theme="signal"] .history-more {
-    background: rgba(18, 28, 25, 0.72);
+    background: rgba(15, 27, 26, 0.72);
+    color: var(--seal);
+    border-color: var(--line);
     border-radius: 999px;
+}
+
+html[data-theme="signal"] .history-more:hover {
+    background: rgba(94, 234, 212, 0.08);
+    border-color: var(--line-strong);
 }
 
 html[data-theme="signal"] .chat-image {
@@ -1334,91 +1462,115 @@ html[data-theme="signal"] .chat-image {
     border-radius: 10px;
 }
 
-html[data-theme="signal"] .quote-ref {
-    border-radius: 0 8px 8px 0;
-}
-
 html[data-theme="signal"] .quote-ref,
 html[data-theme="signal"] .quote-bar {
-    background: rgba(94, 234, 212, 0.08);
-    border-color: rgba(94, 234, 212, 0.2);
+    background: rgba(94, 234, 212, 0.07);
+    border-color: rgba(94, 234, 212, 0.18);
     border-left-color: var(--seal);
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 html[data-theme="signal"] .badge {
     background: var(--amber);
-    color: #0b1210;
+    color: #1a1206;
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.28);
 }
 
-html[data-theme="signal"] .history-more {
+html[data-theme="signal"] .linkish {
     color: var(--seal);
-    border-color: var(--line);
-}
-
-html[data-theme="signal"] .linkish { color: var(--seal); }
-
-html[data-theme="signal"] .bubble.mine {
-    background: var(--mine);
-    border-color: rgba(94, 234, 212, 0.55);
+    background: transparent;
+    border: 0;
 }
 
 html[data-theme="signal"] input[type="text"],
 html[data-theme="signal"] input[type="password"],
 html[data-theme="signal"] input:not([type]) {
-    background: #0b1210;
+    background: rgba(255, 255, 255, 0.02);
     color: var(--ink);
     border: 1px solid var(--line);
-    border-radius: 2px;
+    border-radius: 8px;
+    caret-color: var(--seal);
+}
+
+html[data-theme="signal"] input::placeholder {
+    color: rgba(139, 163, 172, 0.62);
 }
 
 html[data-theme="signal"] input:focus {
     outline: none;
     border-color: var(--seal);
-    box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.16);
+    box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.14);
 }
 
 html[data-theme="signal"] button {
-    background: transparent;
-    color: var(--seal);
-    border: 1px solid var(--seal);
-    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-html[data-theme="signal"] button:hover { background: rgba(94, 234, 212, 0.12); }
+html[data-theme="signal"] button:hover {
+    background: rgba(94, 234, 212, 0.08);
+    border-color: var(--line-strong);
+    color: var(--seal);
+}
 
-html[data-theme="signal"] .nav.active,
-html[data-theme="signal"] .person.active {
-    background: rgba(94, 234, 212, 0.16);
-    color: #effffb;
+html[data-theme="signal"] .nav,
+html[data-theme="signal"] .person,
+html[data-theme="signal"] .me-avatar,
+html[data-theme="signal"] .me-name,
+html[data-theme="signal"] .tool-btn,
+html[data-theme="signal"] .emoji-panel button,
+html[data-theme="signal"] .name-menu button,
+html[data-theme="signal"] .avatar-grid button,
+html[data-theme="signal"] .linkish {
+    background: transparent;
+    border: 0;
+}
+
+html[data-theme="signal"] .avatar-grid button {
+    border: 2px solid transparent;
+}
+
+html[data-theme="signal"] .avatar-grid button.selected {
     border-color: var(--seal);
+    box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.16);
+}
+
+html[data-theme="signal"] .name-menu button:hover,
+html[data-theme="signal"] .avatar-grid button:hover {
+    background: rgba(94, 234, 212, 0.1);
+    color: var(--seal);
 }
 
 html[data-theme="signal"] button.text,
 html[data-theme="signal"] .file {
     color: var(--sidebar-text);
-    border-color: var(--line);
+    border: 0;
     background: transparent;
 }
 
-html[data-theme="signal"] .composer {
-    background: linear-gradient(180deg, rgba(94, 234, 212, 0.05), transparent 48%), var(--card);
+html[data-theme="signal"] .composer-shell {
+    background: rgba(8, 17, 16, 0.72);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 34px rgba(0, 0, 0, 0.32);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-html[data-theme="signal"] .composer-shell {
-    background: #0f1916;
-    border-color: var(--line);
-    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.04), 0 16px 40px rgba(0, 0, 0, 0.28);
-    border-radius: 4px;
+html[data-theme="signal"] .composer-shell:focus-within {
+    border-color: var(--line-strong);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 0 0 3px rgba(94, 234, 212, 0.08), 0 14px 34px rgba(0, 0, 0, 0.32);
 }
 
 html[data-theme="signal"] .composer-toolbar {
-    border-bottom-color: rgba(94, 234, 212, 0.16);
+    border-bottom-color: rgba(94, 234, 212, 0.1);
 }
 
 html[data-theme="signal"] .tool-btn {
     color: var(--muted);
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 html[data-theme="signal"] .tool-btn:hover,
@@ -1431,35 +1583,44 @@ html[data-theme="signal"] .composer textarea {
     background: transparent;
     color: var(--ink);
     border: 0;
+    caret-color: var(--seal);
+}
+
+html[data-theme="signal"] .composer textarea::placeholder {
+    color: rgba(139, 163, 172, 0.62);
 }
 
 html[data-theme="signal"] .attach-preview {
-    border-bottom-color: rgba(94, 234, 212, 0.2);
+    border-bottom-color: rgba(94, 234, 212, 0.14);
     background: transparent;
 }
 
 html[data-theme="signal"] .emoji-panel,
 html[data-theme="signal"] .font-panel {
-    background: #121c19;
+    background: var(--card);
     border-color: var(--line);
-    border-radius: 4px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    border-radius: 12px;
+    box-shadow: 0 20px 46px rgba(0, 0, 0, 0.5);
 }
 
 html[data-theme="signal"] .emoji-panel::after,
 html[data-theme="signal"] .font-panel::after {
-    background: #121c19;
+    background: var(--card);
     border-right-color: var(--line);
     border-bottom-color: var(--line);
 }
 
+html[data-theme="signal"] .emoji-panel button {
+    border-radius: 8px;
+}
+
 html[data-theme="signal"] .emoji-panel button:hover {
-    background: rgba(94, 234, 212, 0.16);
+    background: rgba(94, 234, 212, 0.14);
 }
 
 html[data-theme="signal"] .font-chip {
     color: var(--ink);
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 html[data-theme="signal"] .font-chip:hover,
@@ -1470,34 +1631,60 @@ html[data-theme="signal"] .font-chip.active {
 }
 
 html[data-theme="signal"] .attach-thumb .remove {
-    background: #5eead4;
-    color: #0b1210;
+    background: var(--seal);
+    color: #04211d;
+    border: 0;
 }
 
 html[data-theme="signal"] .send-btn {
-    background: var(--seal);
-    color: #0b1210;
+    background: linear-gradient(135deg, #7ff5e2 0%, #2dd4bf 100%);
+    color: #04211d;
     border: 0;
-    border-radius: 4px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 8px 22px rgba(94, 234, 212, 0.22);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+html[data-theme="signal"] .send-btn:hover {
+    background: linear-gradient(135deg, #8df7e6 0%, #3ee0ca 100%);
+    color: #04211d;
+    filter: brightness(1.03);
+    box-shadow: 0 10px 26px rgba(94, 234, 212, 0.32);
+    transform: translateY(-1px);
+}
+
+html[data-theme="signal"] .send-btn:active {
+    transform: translateY(0);
+}
+
+html[data-theme="signal"] .send-btn:disabled,
+html[data-theme="signal"] .gate-submit:disabled {
+    opacity: 0.45;
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
 }
 
 html[data-theme="signal"] .danger {
     color: #ffb4a8;
-    border-color: #ff6b5a;
+    border-color: rgba(255, 107, 90, 0.5);
     background: transparent;
+    border-radius: 999px;
 }
 
 html[data-theme="signal"] .error,
 html[data-theme="signal"] .flash {
     color: #ffd0c8;
-    background: rgba(255, 107, 90, 0.14);
-    border: 1px solid rgba(255, 107, 90, 0.4);
+    background: rgba(255, 107, 90, 0.12);
+    border: 1px solid rgba(255, 107, 90, 0.35);
+    border-radius: 10px;
 }
 
-html[data-theme="signal"] .dot { background: #3d5560; box-shadow: none; }
+html[data-theme="signal"] .dot { background: #35505b; box-shadow: none; }
 html[data-theme="signal"] .dot.on {
     background: var(--online);
-    box-shadow: 0 0 8px var(--online);
+    box-shadow: 0 0 10px rgba(94, 234, 212, 0.65);
 }
 
 html[data-theme="signal"] .meta,
@@ -1507,7 +1694,11 @@ html[data-theme="signal"] .lede,
 html[data-theme="signal"] .switch,
 html[data-theme="signal"] .file-name { color: var(--muted); }
 
-html[data-theme="signal"] .status { color: #ffb020; }
+html[data-theme="signal"] .avatar-upload:hover {
+    background: rgba(94, 234, 212, 0.08);
+}
+
+html[data-theme="signal"] .status { color: var(--amber); }
 html[data-theme="signal"] th,
 html[data-theme="signal"] td { border-bottom-color: var(--line); }
 
@@ -1698,24 +1889,64 @@ html[data-theme="signal"] .gate-panel .gate-input input:focus {
 
 html[data-theme="signal"] .gate-dove .gate-panel {
     background:
-        radial-gradient(90% 55% at 100% 0%, rgba(61, 196, 180, 0.16), transparent 52%),
-        linear-gradient(165deg, #f6f8f7 0%, #e7eeeb 100%);
+        radial-gradient(90% 55% at 100% 0%, rgba(94, 234, 212, 0.1), transparent 55%),
+        radial-gradient(70% 50% at 0% 100%, rgba(45, 212, 191, 0.06), transparent 60%),
+        var(--paper);
 }
-html[data-theme="signal"] .gate-dove .gate-panel-inner { background: #fff; }
+
+html[data-theme="signal"] .gate-dove .gate-panel-inner {
+    background: rgba(15, 27, 26, 0.82);
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(94, 234, 212, 0.04);
+}
+
+html[data-theme="signal"] .gate-dove .gate-panel-inner:hover {
+    border-color: var(--line-strong);
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(94, 234, 212, 0.08);
+}
+
+html[data-theme="signal"] .gate-dove .gate-field { color: var(--muted); }
+
 html[data-theme="signal"] .gate-dove .gate-input {
     background: transparent;
     border: 0;
-    border-bottom: 1.5px solid #e3ebe8;
+    border-bottom: 1.5px solid var(--line);
     box-shadow: none;
 }
+
 html[data-theme="signal"] .gate-dove .gate-input:focus-within {
-    border-bottom-color: #178f86;
-    box-shadow: none;
+    border-bottom-color: var(--seal);
+    box-shadow: 0 8px 22px -14px rgba(94, 234, 212, 0.6);
 }
+
+html[data-theme="signal"] .gate-dove .tip-bubble {
+    background: var(--card);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="signal"] .gate-dove .tip-bubble::after {
+    border-top-color: var(--card);
+}
+
+html[data-theme="signal"] .gate-dove .dove-shadow {
+    background: radial-gradient(ellipse, rgba(94, 234, 212, 0.14), transparent 70%);
+}
+
+html[data-theme="signal"] .gate-dove .dove svg {
+    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.35));
+}
+
 html[data-theme="signal"] .gate-dove .gate-submit,
 html[data-theme="signal"] .gate-dove .gate-submit:hover {
-    background: linear-gradient(90deg, #1c8f86 0%, #3ec6b0 100%);
-    color: #fff;
+    background: linear-gradient(135deg, #7ff5e2 0%, #2dd4bf 100%);
+    color: #04211d;
+    box-shadow: 0 12px 28px rgba(94, 234, 212, 0.22);
+}
+
+html[data-theme="signal"] .gate-dove .gate-submit:hover {
+    box-shadow: 0 16px 34px rgba(94, 234, 212, 0.32);
 }
 
 .modal[hidden] {
