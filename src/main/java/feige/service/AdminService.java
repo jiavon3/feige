@@ -27,17 +27,20 @@ public class AdminService {
     private final ConversationMemberRepository members;
     private final ChatMessageRepository messages;
     private final FileStorage files;
+    private final ProfileService profileService;
 
     public AdminService(UserAccountRepository users,
                         ConversationRepository conversations,
                         ConversationMemberRepository members,
                         ChatMessageRepository messages,
-                        FileStorage files) {
+                        FileStorage files,
+                        ProfileService profileService) {
         this.users = users;
         this.conversations = conversations;
         this.members = members;
         this.messages = messages;
         this.files = files;
+        this.profileService = profileService;
     }
 
     @Transactional
@@ -71,7 +74,10 @@ public class AdminService {
             members.deleteAll(rows);
             conversations.deleteAll(directs);
         }
+        // 大厅成员关系也指向该用户，不删除会撞外键，导致删除用户整体失败
+        members.deleteAll(members.findByUser_Id(userId));
         users.delete(user);
+        profileService.deleteCustomAvatar(user);
         for (String storedName : storedNames) {
             files.deleteQuietly(storedName);
         }
@@ -80,9 +86,9 @@ public class AdminService {
 
     @Transactional
     public void clear() {
-        messages.deleteAll();
-        members.deleteAll();
-        conversations.deleteAll(conversations.findByType(ConversationType.DIRECT));
+        messages.deleteAllInBatch();
+        members.deleteAllInBatch();
+        conversations.deleteAllInBatch(conversations.findByType(ConversationType.DIRECT));
         files.deleteAll();
     }
 

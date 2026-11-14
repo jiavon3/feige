@@ -19,10 +19,6 @@ public class AppSetting {
     public AppSetting() {
     }
 
-    public String getSettingKey() {
-        return settingKey;
-    }
-
     public void setSettingKey(String settingKey) {
         this.settingKey = settingKey;
     }

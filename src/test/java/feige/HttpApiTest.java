@@ -76,6 +76,31 @@ class HttpApiTest extends AbstractFeigeTest {
     }
 
     @Test
+    void meReturnsProfileChangesMadeAfterLogin() throws Exception {
+        UserAccount user = accountService.register("张三", "secret1");
+        FeigeUser stale = new FeigeUser(user);
+        profileService.updateProfile(user.getId(), "新昵称", null);
+        profileService.updateProfile(user.getId(), null, "builtin:avatar3.png");
+        mockMvc.perform(get("/api/me").with(user(stale)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value("新昵称"))
+                .andExpect(jsonPath("$.avatar").value("/avatars/avatar3.png"));
+    }
+
+    @Test
+    void customAvatarIsServedWithItsRealImageType() throws Exception {
+        UserAccount user = accountService.register("张三", "secret1");
+        byte[] png = {(byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 0};
+        UserAccount updated = profileService.uploadCustomAvatar(user.getId(),
+                new MockMultipartFile("file", "a.png", "image/png", png));
+        String stored = updated.getAvatar().substring("custom:".length());
+        mockMvc.perform(get("/api/avatars/" + stored).with(user(new FeigeUser(user))))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("image/png"))
+                .andExpect(content().bytes(png));
+    }
+
+    @Test
     void adminSwitchesTheThemeSeenByEveryone() throws Exception {
         mockMvc.perform(get("/api/theme"))
                 .andExpect(status().isOk())

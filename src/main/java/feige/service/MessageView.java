@@ -14,13 +14,12 @@ public class MessageView {
     private final boolean recalled;
     private final Long quoteMessageId;
     private final String quoteSenderName;
-    private final String quoteKind;
     private final String quoteBody;
     private final Instant createdAt;
 
     public MessageView(long id, long conversationId, long senderId, String senderName,
                        String kind, String body, Long sizeBytes, boolean recalled,
-                       Long quoteMessageId, String quoteSenderName, String quoteKind, String quoteBody,
+                       Long quoteMessageId, String quoteSenderName, String quoteBody,
                        Instant createdAt) {
         this.id = id;
         this.conversationId = conversationId;
@@ -32,7 +31,6 @@ public class MessageView {
         this.recalled = recalled;
         this.quoteMessageId = quoteMessageId;
         this.quoteSenderName = quoteSenderName;
-        this.quoteKind = quoteKind;
         this.quoteBody = quoteBody;
         this.createdAt = createdAt;
     }
@@ -75,10 +73,6 @@ public class MessageView {
 
     public String getQuoteSenderName() {
         return quoteSenderName;
-    }
-
-    public String getQuoteKind() {
-        return quoteKind;
     }
 
     public String getQuoteBody() {

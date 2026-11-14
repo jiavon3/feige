@@ -24,6 +24,11 @@ class AdminServiceTest extends AbstractFeigeTest {
         UserAccount keeper = accountService.register("张三", "secret1");
         UserAccount victim = accountService.register("李四", "secret1");
         long hallId = chatService.hallId();
+        chatService.ensureHallMember(victim.getId());
+        UserAccount withAvatar = profileService.uploadCustomAvatar(victim.getId(),
+                new org.springframework.mock.web.MockMultipartFile("file", "me.png", "image/png",
+                        "avatar".getBytes(StandardCharsets.UTF_8)));
+        String avatarStored = withAvatar.getAvatar().substring("custom:".length());
         chatService.sendText(keeper.getId(), hallId, "留下来", null);
         chatService.sendText(victim.getId(), hallId, "删掉我", null);
         ConversationView direct = chatService.openDirect(keeper.getId(), victim.getId());
@@ -36,6 +41,8 @@ class AdminServiceTest extends AbstractFeigeTest {
 
         assertFalse(userRepository.existsByUsernameKey("李四"));
         assertTrue(userRepository.existsByUsernameKey("张三"));
+        assertFalse(memberRepository.existsByConversation_IdAndUser_Id(hallId, victim.getId()));
+        assertThrows(ApiException.class, () -> profileService.requireCustomAvatar(avatarStored));
         assertEquals(1, chatService.history(keeper.getId(), hallId, null, 50).getMessages().size());
         assertEquals("留下来", chatService.history(keeper.getId(), hallId, null, 50).getMessages().get(0).getBody());
         assertFalse(conversationRepository.findById(direct.getId()).isPresent());

@@ -55,10 +55,6 @@ public class UserAccount {
         this.username = username;
     }
 
-    public String getUsernameKey() {
-        return usernameKey;
-    }
-
     public void setUsernameKey(String usernameKey) {
         this.usernameKey = usernameKey;
     }

@@ -1,5 +1,6 @@
 package feige.web;
 
+import feige.domain.UserAccount;
 import feige.service.AccountService;
 import feige.service.ChatService;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class RegisterController {
 
     @PostMapping("/api/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest request) {
-        feige.domain.UserAccount user = accounts.register(request.username, request.password);
+        UserAccount user = accounts.register(request.username, request.password);
         chats.ensureHallMember(user.getId());
         Map<String, Object> body = new LinkedHashMap<String, Object>();
         body.put("id", user.getId());

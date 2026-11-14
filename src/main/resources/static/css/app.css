@@ -215,14 +215,6 @@ a { color: var(--seal); }
     .gate-brand-name { font-size: 48px; letter-spacing: 0.12em; }
 }
 
-.card {
-    width: min(420px, calc(100% - 32px));
-    background: var(--card);
-    border: 1px solid var(--line);
-    padding: 32px 28px;
-    box-shadow: 0 18px 50px rgba(38, 34, 28, 0.08);
-}
-
 .mark {
     margin: 0;
     color: var(--seal);
@@ -259,7 +251,7 @@ button {
     cursor: pointer;
 }
 
-button.text, .file {
+button.text {
     background: transparent;
     color: var(--sidebar-text);
     padding: 0;
@@ -415,8 +407,7 @@ aside .me-name {
     transition: border-color 0.12s ease;
 }
 
-.avatar-grid button:hover,
-.avatar-grid button.selected {
+.avatar-grid button:hover {
     border-color: var(--seal);
 }
 
@@ -1112,16 +1103,6 @@ main {
 
 .emoji-panel button:hover { background: rgba(47, 122, 109, 0.1); }
 
-.file {
-    color: var(--ink);
-    border: 1px solid var(--line);
-    padding: 6px 12px;
-    background: white;
-    border-radius: 6px;
-}
-
-.file input { display: none; }
-
 .file-name {
     color: var(--muted);
     font-size: 13px;
@@ -1151,7 +1132,6 @@ html[data-theme="signal"] {
     --line: rgba(110, 231, 212, 0.18);
     --line-strong: rgba(110, 231, 212, 0.36);
     --seal: #5eead4;
-    --seal-dim: #2dd4bf;
     --sidebar: #060b0e;
     --sidebar-text: #dcebe9;
     --muted: #8ba3ac;
@@ -1233,11 +1213,6 @@ html[data-theme="signal"] aside .person:hover {
     background: rgba(94, 234, 212, 0.07);
 }
 
-html[data-theme="signal"] .person-avatar,
-html[data-theme="signal"] .me-avatar {
-    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.22);
-}
-
 html[data-theme="signal"] aside .nav.active,
 html[data-theme="signal"] aside .person.active {
     background: linear-gradient(90deg, rgba(94, 234, 212, 0.2), rgba(94, 234, 212, 0.04));
@@ -1276,6 +1251,7 @@ html[data-theme="signal"] .me-name {
 html[data-theme="signal"] .me-avatar,
 html[data-theme="signal"] .person-avatar {
     background: rgba(94, 234, 212, 0.12);
+    box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.22);
 }
 
 html[data-theme="signal"] .me-avatar:hover {
@@ -1285,7 +1261,6 @@ html[data-theme="signal"] .me-avatar:hover {
 html[data-theme="signal"] .brand-lockup:hover {
     background: rgba(94, 234, 212, 0.08);
 }
-html[data-theme="signal"] .card,
 html[data-theme="signal"] .quote-bar,
 html[data-theme="signal"] table {
     border: 1px solid var(--line);
@@ -1533,9 +1508,8 @@ html[data-theme="signal"] .avatar-grid button {
     border: 2px solid transparent;
 }
 
-html[data-theme="signal"] .avatar-grid button.selected {
+html[data-theme="signal"] .avatar-grid button:hover {
     border-color: var(--seal);
-    box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.16);
 }
 
 html[data-theme="signal"] .name-menu button:hover,
@@ -1544,8 +1518,7 @@ html[data-theme="signal"] .avatar-grid button:hover {
     color: var(--seal);
 }
 
-html[data-theme="signal"] button.text,
-html[data-theme="signal"] .file {
+html[data-theme="signal"] button.text {
     color: var(--sidebar-text);
     border: 0;
     background: transparent;

@@ -1,13 +1,16 @@
 package feige.web;
 
 import feige.domain.FeigeUser;
+import feige.service.ApiException;
 import feige.service.ChatService;
 import feige.service.Download;
+import feige.service.FileStorage;
 import feige.service.MessageFanout;
 import feige.service.MessageView;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,7 +42,7 @@ public class FileController {
                               @RequestParam(value = "quoteMessageId", required = false) Long quoteMessageId)
             throws IOException {
         if (file == null || file.isEmpty()) {
-            throw new feige.service.ApiException(org.springframework.http.HttpStatus.BAD_REQUEST, feige.service.FileStorage.EMPTY);
+            throw new ApiException(HttpStatus.BAD_REQUEST, FileStorage.EMPTY);
         }
         MessageView view = chats.saveUpload(user.getId(), conversationId, file.getOriginalFilename(),
                 file.getInputStream(), quoteMessageId);
@@ -54,7 +57,7 @@ public class FileController {
                                    @RequestParam(value = "quoteMessageId", required = false) Long quoteMessageId)
             throws IOException {
         if (file == null || file.isEmpty()) {
-            throw new feige.service.ApiException(org.springframework.http.HttpStatus.BAD_REQUEST, feige.service.FileStorage.EMPTY);
+            throw new ApiException(HttpStatus.BAD_REQUEST, FileStorage.EMPTY);
         }
         MessageView view = chats.saveImage(user.getId(), conversationId, file.getOriginalFilename(),
                 file.getContentType(), file.getInputStream(), quoteMessageId);

@@ -67,23 +67,6 @@ public class ProfileService {
         return BUILTIN_AVATARS;
     }
 
-    public UserAccount updateNickname(Long userId, String nickname) {
-        UserAccount account = users.findById(userId).orElseThrow();
-        account.setNickname(normalizeNickname(nickname));
-        return users.save(account);
-    }
-
-    public UserAccount selectBuiltinAvatar(Long userId, String name) {
-        name = normalizeBuiltinName(name);
-        if (!BUILTIN_AVATARS.contains(name)) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "不存在的内置头像");
-        }
-        UserAccount account = users.findById(userId).orElseThrow();
-        deleteOldCustomAvatar(account);
-        account.setAvatar(BUILTIN_PREFIX + name);
-        return users.save(account);
-    }
-
     public UserAccount uploadCustomAvatar(Long userId, MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, AVATAR_EMPTY);
@@ -96,10 +79,13 @@ public class ProfileService {
             throw new ApiException(HttpStatus.BAD_REQUEST, AVATAR_TYPE_INVALID);
         }
         UserAccount account = users.findById(userId).orElseThrow();
-        deleteOldCustomAvatar(account);
         String stored = save(file);
-        account.setAvatar(CUSTOM_PREFIX + stored);
-        return users.save(account);
+        try {
+            return saveAvatar(account, CUSTOM_PREFIX + stored);
+        } catch (RuntimeException ex) {
+            new File(directory, stored).delete();
+            throw ex;
+        }
     }
 
     public UserAccount updateProfile(Long userId, String nickname, String avatar) {
@@ -107,19 +93,17 @@ public class ProfileService {
         if (nickname != null) {
             account.setNickname(normalizeNickname(nickname));
         }
-        if (avatar != null) {
-            if (avatar.startsWith(BUILTIN_PREFIX)) {
-                String name = normalizeBuiltinName(avatar.substring(BUILTIN_PREFIX.length()));
-                if (!BUILTIN_AVATARS.contains(name)) {
-                    throw new ApiException(HttpStatus.BAD_REQUEST, "不存在的内置头像");
-                }
-                deleteOldCustomAvatar(account);
-                account.setAvatar(BUILTIN_PREFIX + name);
-            } else {
-                throw new ApiException(HttpStatus.BAD_REQUEST, "头像格式错误");
-            }
+        if (avatar == null) {
+            return users.save(account);
         }
-        return users.save(account);
+        if (!avatar.startsWith(BUILTIN_PREFIX)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "头像格式错误");
+        }
+        String name = normalizeBuiltinName(avatar.substring(BUILTIN_PREFIX.length()));
+        if (!BUILTIN_AVATARS.contains(name)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "不存在的内置头像");
+        }
+        return saveAvatar(account, BUILTIN_PREFIX + name);
     }
 
     public void changePassword(Long userId, String currentPassword, String newPassword) {
@@ -189,11 +173,21 @@ public class ProfileService {
         return trimmed;
     }
 
-    private void deleteOldCustomAvatar(UserAccount account) {
-        String old = account.getAvatar();
-        if (old != null && old.startsWith(CUSTOM_PREFIX)) {
-            String stored = old.substring(CUSTOM_PREFIX.length());
-            new File(directory, stored).delete();
+    public void deleteCustomAvatar(UserAccount account) {
+        deleteCustomAvatarToken(account == null ? null : account.getAvatar());
+    }
+
+    private UserAccount saveAvatar(UserAccount account, String avatar) {
+        String oldAvatar = account.getAvatar();
+        account.setAvatar(avatar);
+        UserAccount saved = users.save(account);
+        deleteCustomAvatarToken(oldAvatar);
+        return saved;
+    }
+
+    private void deleteCustomAvatarToken(String avatar) {
+        if (avatar != null && avatar.startsWith(CUSTOM_PREFIX)) {
+            new File(directory, avatar.substring(CUSTOM_PREFIX.length())).delete();
         }
     }
 

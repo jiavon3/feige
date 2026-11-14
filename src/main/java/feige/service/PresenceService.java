@@ -11,22 +11,28 @@ public class PresenceService {
     private final ConcurrentHashMap<Long, AtomicInteger> counts = new ConcurrentHashMap<Long, AtomicInteger>();
 
     public boolean connected(long userId) {
-        AtomicInteger created = new AtomicInteger(0);
-        AtomicInteger existing = counts.putIfAbsent(userId, created);
-        AtomicInteger count = existing == null ? created : existing;
-        return count.incrementAndGet() == 1;
+        final boolean[] first = {false};
+        counts.compute(userId, (id, count) -> {
+            if (count == null) {
+                first[0] = true;
+                return new AtomicInteger(1);
+            }
+            count.incrementAndGet();
+            return count;
+        });
+        return first[0];
     }
 
     public boolean disconnected(long userId) {
-        AtomicInteger count = counts.get(userId);
-        if (count == null) {
-            return false;
-        }
-        if (count.decrementAndGet() <= 0) {
-            counts.remove(userId, count);
-            return true;
-        }
-        return false;
+        final boolean[] last = {false};
+        counts.computeIfPresent(userId, (id, count) -> {
+            if (count.decrementAndGet() <= 0) {
+                last[0] = true;
+                return null;
+            }
+            return count;
+        });
+        return last[0];
     }
 
     public boolean isOnline(long userId) {

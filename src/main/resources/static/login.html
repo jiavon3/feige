@@ -60,13 +60,13 @@
                 </div>
             </div>
         </div>
-        <div class="gate-panel-inner" id="loginCard">
+        <div class="gate-panel-inner">
         <p id="error" class="error" hidden>用户名或密码错误</p>
         <form method="post" action="/login" aria-label="登录">
             <label class="gate-field">用户名
                 <span class="gate-input">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.2 18.5c1.2-2.6 3.2-3.8 5.8-3.8s4.6 1.2 5.8 3.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-                    <input id="username" name="username" autocomplete="username" placeholder="请输入用户名" required>
+                    <input name="username" autocomplete="username" placeholder="请输入用户名" required>
                 </span>
             </label>
             <label class="gate-field">密码
@@ -79,7 +79,7 @@
                 </span>
             </label>
             <input type="hidden" name="_csrf">
-            <button class="gate-submit" id="loginBtn" type="submit">
+            <button class="gate-submit" type="submit">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l15-7-6 16-2.2-6.2z" fill="currentColor"/></svg>
                 登录
             </button>

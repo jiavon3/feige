@@ -12,8 +12,6 @@ import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    List<ChatMessage> findByConversation_IdOrderByCreatedAtAscIdAsc(Long conversationId);
-
     List<ChatMessage> findByConversation_IdIn(Collection<Long> conversationIds);
 
     @Query("select m from ChatMessage m where m.sender.id = :senderId "

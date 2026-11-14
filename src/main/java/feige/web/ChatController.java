@@ -1,9 +1,9 @@
 package feige.web;
 
 import feige.domain.FeigeUser;
-import feige.domain.Role;
 import feige.domain.UserAccount;
 import feige.repo.UserAccountRepository;
+import feige.service.ApiException;
 import feige.service.ChatService;
 import feige.service.ConversationView;
 import feige.service.HistoryPage;
@@ -11,6 +11,7 @@ import feige.service.MessageFanout;
 import feige.service.MessageView;
 import feige.service.PresenceService;
 import feige.service.ProfileService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,15 +45,18 @@ public class ChatController {
 
     @GetMapping("/api/me")
     public Map<String, Object> me(@AuthenticationPrincipal FeigeUser user) {
+        // 会话里的 FeigeUser 是登录时的快照，昵称和头像要取数据库里的最新值
+        UserAccount account = users.findById(user.getId()).orElseThrow(
+                () -> new ApiException(HttpStatus.UNAUTHORIZED, "登录已失效"));
         long hallId = chats.hallId();
         Map<String, Object> body = new LinkedHashMap<String, Object>();
-        body.put("id", user.getId());
-        body.put("username", user.getUsername());
-        body.put("nickname", user.getNickname());
-        body.put("avatar", profileService.resolveAvatarUrl(user.getAvatar()));
-        body.put("role", user.getRole().name());
+        body.put("id", account.getId());
+        body.put("username", account.getUsername());
+        body.put("nickname", account.getNickname());
+        body.put("avatar", profileService.resolveAvatarUrl(account.getAvatar()));
+        body.put("role", account.getRole().name());
         body.put("hallConversationId", hallId);
-        body.put("hallUnreadCount", chats.unreadCount(user.getId(), hallId));
+        body.put("hallUnreadCount", chats.unreadCount(account.getId(), hallId));
         return body;
     }
 
@@ -66,17 +68,8 @@ public class ChatController {
             int unread = conversationId == null ? 0 : chats.unreadCount(user.getId(), conversationId);
             views.add(new UserView(account.getId(), account.getUsername(), account.getNickname(),
                     profileService.resolveAvatarUrl(account.getAvatar()), presence.isOnline(account.getId()),
-                    account.getRole() == Role.ADMIN, conversationId, unread));
+                    conversationId, unread));
         }
-        Collections.sort(views, new Comparator<UserView>() {
-            @Override
-            public int compare(UserView left, UserView right) {
-                if (left.isOnline() != right.isOnline()) {
-                    return left.isOnline() ? -1 : 1;
-                }
-                return left.displayName().compareToIgnoreCase(right.displayName());
-            }
-        });
         return views;
     }
 
@@ -120,18 +113,16 @@ public class ChatController {
         private final String nickname;
         private final String avatar;
         private final boolean online;
-        private final boolean admin;
         private final Long conversationId;
         private final int unreadCount;
 
-        public UserView(long id, String username, String nickname, String avatar, boolean online, boolean admin,
+        public UserView(long id, String username, String nickname, String avatar, boolean online,
                         Long conversationId, int unreadCount) {
             this.id = id;
             this.username = username;
             this.nickname = nickname;
             this.avatar = avatar;
             this.online = online;
-            this.admin = admin;
             this.conversationId = conversationId;
             this.unreadCount = unreadCount;
         }
@@ -152,16 +143,8 @@ public class ChatController {
             return avatar;
         }
 
-        public String displayName() {
-            return nickname != null && !nickname.isEmpty() ? nickname : username;
-        }
-
         public boolean isOnline() {
             return online;
-        }
-
-        public boolean isAdmin() {
-            return admin;
         }
 
         public Long getConversationId() {

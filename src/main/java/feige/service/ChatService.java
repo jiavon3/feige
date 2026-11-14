@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -354,7 +355,6 @@ public class ChatService {
         Long size = message.isRecalled() ? null : message.getSizeBytes();
         String senderName = displayName(message.getSender());
         String quoteSender = null;
-        String quoteKind = null;
         String quoteBody = null;
         if (message.getQuoteMessageId() != null) {
             ChatMessage quoted = messages.findById(message.getQuoteMessageId()).orElse(null);
@@ -362,7 +362,6 @@ public class ChatService {
                 quoteBody = "引用内容已撤回";
             } else {
                 quoteSender = displayName(quoted.getSender());
-                quoteKind = quoted.getKind().name();
                 quoteBody = quoteSummary(quoted);
             }
         }
@@ -377,7 +376,6 @@ public class ChatService {
                 message.isRecalled(),
                 message.getQuoteMessageId(),
                 quoteSender,
-                quoteKind,
                 quoteBody,
                 message.getCreatedAt());
     }
@@ -439,21 +437,10 @@ public class ChatService {
     }
 
     private static Set<String> imageTypes() {
-        Set<String> types = new HashSet<String>();
-        types.add("image/jpeg");
-        types.add("image/png");
-        types.add("image/gif");
-        types.add("image/webp");
-        return types;
+        return new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/gif", "image/webp"));
     }
 
     private static Set<String> imageExt() {
-        Set<String> ext = new HashSet<String>();
-        ext.add(".jpg");
-        ext.add(".jpeg");
-        ext.add(".png");
-        ext.add(".gif");
-        ext.add(".webp");
-        return ext;
+        return new HashSet<String>(Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".webp"));
     }
 }

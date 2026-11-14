@@ -373,10 +373,12 @@
     }
 
     function loadHistory() {
-        if (!activeId) return;
-        api("/api/conversations/" + activeId + "/messages?limit=50").then(function (response) {
+        var requestedId = activeId;
+        if (!requestedId) return;
+        api("/api/conversations/" + requestedId + "/messages?limit=50").then(function (response) {
             return response.json();
         }).then(function (page) {
+            if (requestedId !== activeId) return;
             log.innerHTML = "";
             hasMore = !!page.hasMore;
             var messages = page.messages || [];
@@ -388,11 +390,14 @@
     }
 
     function loadOlder() {
-        if (!activeId || !hasMore || !oldestId) return;
+        var requestedId = activeId;
+        if (!requestedId || !hasMore || !oldestId) return;
+        var before = oldestId;
         var previousHeight = log.scrollHeight;
-        api("/api/conversations/" + activeId + "/messages?limit=50&beforeId=" + oldestId).then(function (response) {
+        api("/api/conversations/" + requestedId + "/messages?limit=50&beforeId=" + before).then(function (response) {
             return response.json();
         }).then(function (page) {
+            if (requestedId !== activeId) return;
             hasMore = !!page.hasMore;
             var messages = page.messages || [];
             if (messages.length) oldestId = messages[0].id;
@@ -412,7 +417,7 @@
                 renderHallBadge();
             } else {
                 users.forEach(function (user) {
-                    if (user.username === activeTitle) user.unreadCount = 0;
+                    if (user.conversationId === activeId) user.unreadCount = 0;
                 });
                 renderUsers();
             }
@@ -688,13 +693,13 @@
         else if (skipped) flash("已添加部分图片，最多 " + MAX_IMAGES + " 张");
     }
 
-    function uploadOne(file, kind, quoteId) {
+    function uploadOne(conversationId, file, kind, quoteId) {
         var data = new FormData();
         data.append("file", file);
         if (quoteId) data.append("quoteMessageId", quoteId);
         var url = kind === "image"
-            ? "/api/conversations/" + activeId + "/images"
-            : "/api/conversations/" + activeId + "/files";
+            ? "/api/conversations/" + conversationId + "/images"
+            : "/api/conversations/" + conversationId + "/files";
         return api(url, {method: "POST", body: data}).then(function (response) {
             if (!response.ok) {
                 return response.json().then(function (body) {
@@ -706,11 +711,12 @@
     }
 
     function uploadSequentially(files, kind) {
+        var conversationId = activeId;
         var quoteId = quoteTarget ? quoteTarget.id : null;
         var chain = Promise.resolve();
         files.forEach(function (file, index) {
             chain = chain.then(function () {
-                return uploadOne(file, kind, index === 0 ? quoteId : null);
+                return uploadOne(conversationId, file, kind, index === 0 ? quoteId : null);
             });
         });
         return chain;

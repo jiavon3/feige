@@ -10,6 +10,7 @@ import feige.service.AccountService;
 import feige.service.AdminService;
 import feige.service.ChatService;
 import feige.service.FileStorage;
+import feige.service.ProfileService;
 import feige.web.ChatWebSocketHandler;
 import feige.web.SocketHub;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +47,8 @@ public abstract class AbstractFeigeTest {
     protected AdminService adminService;
     @Autowired
     protected FileStorage fileStorage;
+    @Autowired
+    protected ProfileService profileService;
     @Autowired
     protected DataSeeder dataSeeder;
     @Autowired

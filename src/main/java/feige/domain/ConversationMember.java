@@ -42,10 +42,6 @@ public class ConversationMember {
         this.conversation = conversation;
     }
 
-    public UserAccount getUser() {
-        return user;
-    }
-
     public void setUser(UserAccount user) {
         this.user = user;
     }
